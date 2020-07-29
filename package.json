@@ -2,7 +2,12 @@
   "name": "@quenk/backdey-resource-mongodb",
   "version": "1.0.0",
   "description": "Resource boilerplate for tendril web servers",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "files": [
+
+    "lib"
+
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
