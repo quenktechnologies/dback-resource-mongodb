@@ -157,8 +157,6 @@ export interface Resource<T extends Object> {
  * BaseResource provides the default Resource implementation.
  */
 export declare abstract class BaseResource<T extends Object> implements Resource<T> {
-    dbid: string;
-    constructor(dbid: string);
     abstract getModel(): Action<Model<T>>;
     create: (_: Request) => Action<void>;
     search: (_: Request) => Action<void>;

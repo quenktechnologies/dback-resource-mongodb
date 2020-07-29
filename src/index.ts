@@ -226,8 +226,6 @@ export interface Resource<T extends Object> {
 export abstract class BaseResource<T extends Object>
     implements Resource<T> {
 
-    constructor(public dbid: string) { }
-
     abstract getModel(): Action<Model<T>>
 
     create = (_: Request): Action<void> => {
