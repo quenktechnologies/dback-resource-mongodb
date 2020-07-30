@@ -24,15 +24,6 @@ const defaultGetParams = { query: {}, fields: {} };
 const defaultRemoveParams = { query: {} };
 
 /**
- * CreateKeys are the PRS keys used by Resource#create.
- */
-export const enum CreateKeys {
-
-    data = 'resource.mongodb.create.data'
-
-}
-
-/**
  * SearchKeys are the PRS keys used by Resource#search.
  */
 export const enum SearchKeys {
@@ -53,8 +44,6 @@ export const enum SearchKeys {
  * UpdateKeys are the PRS keys used by Resource#update.
  */
 export const enum UpdateKeys {
-
-    data = 'resource.mongodb.update.data',
 
     query = 'resource.mongodb.update.query',
 
@@ -175,7 +164,7 @@ export interface Resource<T extends Object> {
     /**
      * create a new document in the Resource's collection.
      *
-     * The document data is fetched from the [[CreateKeys]] PRS keys.
+     * The document data is read from the request body.
      * A created response is sent with the id of the document once successful.
      */
     create: Filter<void>
@@ -193,7 +182,7 @@ export interface Resource<T extends Object> {
      * update a single document in the Resource's collection.
      *
      * The document id is sourced from Request#params.id and the change data 
-     * from [[UpdateKeys]].
+     * from the request body.
      *
      * A successful update will result in an Success response whereas a
      * NotFound is sent if the update was not applied.
@@ -228,7 +217,7 @@ export abstract class BaseResource<T extends Object>
 
     abstract getModel(): Action<Model<T>>
 
-    create = (_: Request): Action<void> => {
+    create = (r: Request): Action<void> => {
 
         let that = this;
 
@@ -236,9 +225,7 @@ export abstract class BaseResource<T extends Object>
 
             let model = yield that.getModel();
 
-            let data = yield prs.getOrElse(CreateKeys.data, {});
-
-            let id = yield runCreate(model, data);
+            let id = yield runCreate(model, r.body);
 
             return created({ id });
 
@@ -283,9 +270,7 @@ export abstract class BaseResource<T extends Object>
 
             let model = yield that.getModel();
 
-            let data = yield prs.getOrElse(UpdateKeys.data, {});
-
-            let yes = yield runUpdate(model, <Id>r.params.id, data);
+            let yes = yield runUpdate(model, <Id>r.params.id, r.body);
 
             return yes ? ok() : notFound();
 

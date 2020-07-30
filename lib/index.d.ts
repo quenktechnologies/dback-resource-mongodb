@@ -4,12 +4,6 @@ import { Action } from '@quenk/tendril/lib/app/api';
 import { Request, Filter } from '@quenk/tendril/lib/app/api/request';
 import { Id, Model } from '@quenk/backdey-model-mongodb';
 /**
- * CreateKeys are the PRS keys used by Resource#create.
- */
-export declare const enum CreateKeys {
-    data = "resource.mongodb.create.data"
-}
-/**
  * SearchKeys are the PRS keys used by Resource#search.
  */
 export declare const enum SearchKeys {
@@ -23,7 +17,6 @@ export declare const enum SearchKeys {
  * UpdateKeys are the PRS keys used by Resource#update.
  */
 export declare const enum UpdateKeys {
-    data = "resource.mongodb.update.data",
     query = "resource.mongodb.update.query"
 }
 /**
@@ -114,7 +107,7 @@ export interface Resource<T extends Object> {
     /**
      * create a new document in the Resource's collection.
      *
-     * The document data is fetched from the [[CreateKeys]] PRS keys.
+     * The document data is read from the request body.
      * A created response is sent with the id of the document once successful.
      */
     create: Filter<void>;
@@ -130,7 +123,7 @@ export interface Resource<T extends Object> {
      * update a single document in the Resource's collection.
      *
      * The document id is sourced from Request#params.id and the change data
-     * from [[UpdateKeys]].
+     * from the request body.
      *
      * A successful update will result in an Success response whereas a
      * NotFound is sent if the update was not applied.
@@ -158,7 +151,7 @@ export interface Resource<T extends Object> {
  */
 export declare abstract class BaseResource<T extends Object> implements Resource<T> {
     abstract getModel(): Action<Model<T>>;
-    create: (_: Request) => Action<void>;
+    create: (r: Request) => Action<void>;
     search: (_: Request) => Action<void>;
     update: (r: Request) => Action<void>;
     get: (r: Request) => Action<void>;
