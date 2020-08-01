@@ -1,6 +1,6 @@
 {
   "name": "@quenk/backdey-resource-mongodb",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Resource boilerplate for tendril web servers",
   "main": "lib/index.js",
   "files": [
