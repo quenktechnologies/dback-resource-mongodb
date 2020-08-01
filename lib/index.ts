@@ -7,7 +7,7 @@ import { flatten } from '@quenk/noni/lib/data/record/path';
 import { Action, doAction } from '@quenk/tendril/lib/app/api';
 import { Request, Filter } from '@quenk/tendril/lib/app/api/request';
 import { fork, value } from '@quenk/tendril/lib/app/api/control';
-import { ok, created } from '@quenk/tendril/lib/app/api/response';
+import { ok, created, badRequest } from '@quenk/tendril/lib/app/api/response';
 import {
     noContent,
     notFound
@@ -254,7 +254,7 @@ export abstract class BaseResource<T extends Object>
 
             } else {
 
-                return noContent();
+                return badRequest();
 
             }
 
