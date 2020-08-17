@@ -2,7 +2,7 @@ import { Object } from '@quenk/noni/lib/data/jsonx';
 import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { Action } from '@quenk/tendril/lib/app/api';
 import { Request, Filter } from '@quenk/tendril/lib/app/api/request';
-import { Id, Model } from '@quenk/backdey-model-mongodb';
+import { Model } from '@quenk/dback-model-mongodb';
 /**
  * SearchKeys are the PRS keys used by Resource#search.
  */
@@ -163,13 +163,13 @@ export declare abstract class BaseResource<T extends Object> implements Resource
  * The data provided SHOULD be validated according to the application's own
  * rules.
  */
-export declare const runCreate: <T extends Object>(model: Model<T>, data: T) => Action<string | number>;
+export declare const runCreate: <T extends Object>(model: any, data: T) => Action<any>;
 /**
  * runSearch for documents in the database that match the specified query.
  *
  * [[SearchKeys]] can be used to further configure the executed query.
  */
-export declare const runSearch: <T extends Object>(model: Model<T>, query: Object) => Action<SearchResult<T>>;
+export declare const runSearch: <T extends Object>(model: any, query: Object) => Action<SearchResult<T>>;
 /**
  * runUpdate updates a single document by id using the provided changes.
  *
@@ -177,16 +177,16 @@ export declare const runSearch: <T extends Object>(model: Model<T>, query: Objec
  * should be validated by the application before passing to this function.
  * [[UpdateKeys]] can be set to customize the operation.
  */
-export declare const runUpdate: <T extends Object>(model: Model<T>, id: Id, changes: Object) => Action<boolean>;
+export declare const runUpdate: <T extends Object>(model: any, id: any, changes: Object) => Action<boolean>;
 /**
  * runGet retrieves a single document given its id.
  *
  * Additional query parameters may be included using the [[GetKeys]] PRS keys.
  */
-export declare const runGet: <T extends Object>(model: Model<T>, id: Id) => Action<Maybe<T>>;
+export declare const runGet: <T extends Object>(model: any, id: any) => Action<Maybe<T>>;
 /**
  * runRemove a single document by its key.
  *
  * Additional query parameters may be included via [[RemoveKeys]] PRS keys.
  */
-export declare const runRemove: <T extends Object>(model: Model<T>, id: Id) => Action<boolean>;
+export declare const runRemove: <T extends Object>(model: any, id: any) => Action<boolean>;

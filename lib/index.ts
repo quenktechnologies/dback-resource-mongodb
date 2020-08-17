@@ -12,7 +12,7 @@ import {
     noContent,
     notFound
 } from '@quenk/tendril/lib/app/api/response';
-import { Id, Model } from '@quenk/backdey-model-mongodb';
+import { Id, Model } from '@quenk/dback-model-mongodb';
 
 const defaultSearchParams =
     { page: 1, limit: 1000 * 1000, query: {}, sort: {}, fields: {} };

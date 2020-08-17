@@ -1,5 +1,5 @@
 {
-  "name": "@quenk/backdey-resource-mongodb",
+  "name": "@quenk/dback-resource-mongodb",
   "version": "1.0.4",
   "description": "Resource boilerplate for tendril web servers",
   "main": "lib/index.js",
@@ -17,7 +17,7 @@
     "@quenk/tendril": "^0.40.3"
   },
   "devDependencies": {
-    "@quenk/backdey-model-mongodb": "^0.1.2",
+    "@quenk/dback-model-mongodb": "^0.1.2",
     "@types/cookie-parser": "^1.4.2",
     "@types/csurf": "^1.9.36",
     "@types/express": "^4.17.7",
