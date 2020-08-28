@@ -2,7 +2,7 @@ import { Object } from '@quenk/noni/lib/data/jsonx';
 import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { Action } from '@quenk/tendril/lib/app/api';
 import { Request, Filter } from '@quenk/tendril/lib/app/api/request';
-import { Model } from '@quenk/dback-model-mongodb';
+import { Id, Model } from '@quenk/dback-model-mongodb';
 /**
  * SearchKeys are the PRS keys used by Resource#search.
  */
@@ -151,11 +151,38 @@ export interface Resource<T extends Object> {
  */
 export declare abstract class BaseResource<T extends Object> implements Resource<T> {
     abstract getModel(): Action<Model<T>>;
-    create: (r: Request) => Action<void>;
-    search: (_: Request) => Action<void>;
-    update: (r: Request) => Action<void>;
-    get: (r: Request) => Action<void>;
-    remove: (r: Request) => Action<void>;
+    /**
+     * before is a filter that is executed before each of the CSUGR
+     * methods.
+     *
+     * It can be overriden to execute other middleware.
+     */
+    before(r: Request): Action<Request>;
+    /**
+     * beforeCreate is executed before create().
+     */
+    beforeCreate(r: Request): Action<Request>;
+    /**
+     * beforeSearch is executed before search().
+     */
+    beforeSearch(r: Request): Action<Request>;
+    /**
+     * beforeUpdate is executed before update().
+     */
+    beforeUpdate(r: Request): Action<Request>;
+    /**
+     * beforeGet is executed before get().
+     */
+    beforeGet(r: Request): Action<Request>;
+    /**
+     * beforeRemove is executed before remove().
+     */
+    beforeRemove(r: Request): Action<Request>;
+    create: (req: Request) => Action<void>;
+    search: (req: Request) => Action<void>;
+    update: (req: Request) => Action<void>;
+    get: (req: Request) => Action<void>;
+    remove: (req: Request) => Action<void>;
 }
 /**
  * runCreate creates a new document in the provided Model's collection.
@@ -163,13 +190,13 @@ export declare abstract class BaseResource<T extends Object> implements Resource
  * The data provided SHOULD be validated according to the application's own
  * rules.
  */
-export declare const runCreate: <T extends Object>(model: any, data: T) => Action<any>;
+export declare const runCreate: <T extends Object>(model: Model<T>, data: T) => Action<string | number>;
 /**
  * runSearch for documents in the database that match the specified query.
  *
  * [[SearchKeys]] can be used to further configure the executed query.
  */
-export declare const runSearch: <T extends Object>(model: any, query: Object) => Action<SearchResult<T>>;
+export declare const runSearch: <T extends Object>(model: Model<T>, query: Object) => Action<SearchResult<T>>;
 /**
  * runUpdate updates a single document by id using the provided changes.
  *
@@ -177,16 +204,16 @@ export declare const runSearch: <T extends Object>(model: any, query: Object) =>
  * should be validated by the application before passing to this function.
  * [[UpdateKeys]] can be set to customize the operation.
  */
-export declare const runUpdate: <T extends Object>(model: any, id: any, changes: Object) => Action<boolean>;
+export declare const runUpdate: <T extends Object>(model: Model<T>, id: Id, changes: Object) => Action<boolean>;
 /**
  * runGet retrieves a single document given its id.
  *
  * Additional query parameters may be included using the [[GetKeys]] PRS keys.
  */
-export declare const runGet: <T extends Object>(model: any, id: any) => Action<Maybe<T>>;
+export declare const runGet: <T extends Object>(model: Model<T>, id: Id) => Action<Maybe<T>>;
 /**
  * runRemove a single document by its key.
  *
  * Additional query parameters may be included via [[RemoveKeys]] PRS keys.
  */
-export declare const runRemove: <T extends Object>(model: any, id: any) => Action<boolean>;
+export declare const runRemove: <T extends Object>(model: Model<T>, id: Id) => Action<boolean>;

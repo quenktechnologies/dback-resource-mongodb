@@ -217,11 +217,70 @@ export abstract class BaseResource<T extends Object>
 
     abstract getModel(): Action<Model<T>>
 
-    create = (r: Request): Action<void> => {
+    /**
+     * before is a filter that is executed before each of the CSUGR
+     * methods.
+     *
+     * It can be overriden to execute other middleware.
+     */
+    before(r: Request): Action<Request> {
+
+        return value(r);
+
+    }
+
+    /**
+     * beforeCreate is executed before create().
+     */
+    beforeCreate(r: Request): Action<Request> {
+
+        return value(r);
+
+    }
+
+    /**
+     * beforeSearch is executed before search().
+     */
+    beforeSearch(r: Request): Action<Request> {
+
+        return value(r);
+
+    }
+
+    /**
+     * beforeUpdate is executed before update().
+     */
+    beforeUpdate(r: Request): Action<Request> {
+
+        return value(r);
+
+    }
+
+    /**
+     * beforeGet is executed before get().
+     */
+    beforeGet(r: Request): Action<Request> {
+
+        return value(r);
+
+    }
+
+    /**
+     * beforeRemove is executed before remove().
+     */
+    beforeRemove(r: Request): Action<Request> {
+
+        return value(r);
+
+    }
+
+    create = (req: Request): Action<void> => {
 
         let that = this;
 
         return doAction(function*() {
+
+            let r = yield that.beforeCreate(yield that.before(req));
 
             let model = yield that.getModel();
 
@@ -233,11 +292,13 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    search = (_: Request): Action<void> => {
+    search = (req: Request): Action<void> => {
 
         let that = this;
 
         return doAction(function*() {
+
+            yield that.beforeSearch(yield that.before(req));
 
             let model = yield that.getModel();
 
@@ -262,11 +323,13 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    update = (r: Request): Action<void> => {
+    update = (req: Request): Action<void> => {
 
         let that = this;
 
         return doAction(function*() {
+
+            let r = yield that.beforeUpdate(yield that.before(req));
 
             let model = yield that.getModel();
 
@@ -278,11 +341,13 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    get = (r: Request): Action<void> => {
+    get = (req: Request): Action<void> => {
 
         let that = this;
 
         return doAction(function*() {
+
+            let r = yield that.beforeGet(yield that.before(req));
 
             let model = yield that.getModel();
 
@@ -294,11 +359,13 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    remove = (r: Request): Action<void> => {
+    remove = (req: Request): Action<void> => {
 
         let that = this;
 
         return doAction(function*() {
+
+            let r = yield that.beforeRemove(yield that.before(req));
 
             let model = yield that.getModel();
 
