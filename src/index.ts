@@ -6,7 +6,7 @@ import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { flatten } from '@quenk/noni/lib/data/record/path';
 import { Action, doAction } from '@quenk/tendril/lib/app/api';
 import { Request, Filter } from '@quenk/tendril/lib/app/api/request';
-import { fork, value } from '@quenk/tendril/lib/app/api/control';
+import { fork, value, noop } from '@quenk/tendril/lib/app/api/control';
 import { ok, created, badRequest } from '@quenk/tendril/lib/app/api/response';
 import {
     noContent,
@@ -22,6 +22,15 @@ const defaultUpdateParams = { query: {} };
 const defaultGetParams = { query: {}, fields: {} };
 
 const defaultRemoveParams = { query: {} };
+
+/**
+ * HookResult is the result of applying one of the BaseResource hooks.
+ *
+ * If the result is an Action yielding no value, execution stops assuming
+ * a response was sent to the client, if the Action yields a Request, execution
+ * will continue after the hook.
+ */
+export type HookResult = Action<void> | Action<Request>;
 
 /**
  * SearchKeys are the PRS keys used by Resource#search.
@@ -223,7 +232,7 @@ export abstract class BaseResource<T extends Object>
      *
      * It can be overriden to execute other middleware.
      */
-    before(r: Request): Action<Request> {
+    before(r: Request): HookResult {
 
         return value(r);
 
@@ -232,7 +241,7 @@ export abstract class BaseResource<T extends Object>
     /**
      * beforeCreate is executed before create().
      */
-    beforeCreate(r: Request): Action<Request> {
+    beforeCreate(r: Request): HookResult {
 
         return value(r);
 
@@ -241,7 +250,7 @@ export abstract class BaseResource<T extends Object>
     /**
      * beforeSearch is executed before search().
      */
-    beforeSearch(r: Request): Action<Request> {
+    beforeSearch(r: Request): HookResult {
 
         return value(r);
 
@@ -250,7 +259,7 @@ export abstract class BaseResource<T extends Object>
     /**
      * beforeUpdate is executed before update().
      */
-    beforeUpdate(r: Request): Action<Request> {
+    beforeUpdate(r: Request): HookResult {
 
         return value(r);
 
@@ -259,7 +268,7 @@ export abstract class BaseResource<T extends Object>
     /**
      * beforeGet is executed before get().
      */
-    beforeGet(r: Request): Action<Request> {
+    beforeGet(r: Request): HookResult {
 
         return value(r);
 
@@ -268,23 +277,29 @@ export abstract class BaseResource<T extends Object>
     /**
      * beforeRemove is executed before remove().
      */
-    beforeRemove(r: Request): Action<Request> {
+    beforeRemove(r: Request): HookResult {
 
         return value(r);
 
     }
 
-    create = (req: Request): Action<void> => {
+    create = (r: Request): Action<void> => {
 
         let that = this;
 
-        return doAction(function*() {
+        return doAction<void>(function*() {
 
-            let r = yield that.beforeCreate(yield that.before(req));
+            let r1 = yield that.before(r);
+
+            if (r1 == null) return noop();
+
+            let r2 = yield that.beforeCreate(r1);
+
+            if (r2 == null) return noop();
 
             let model = yield that.getModel();
 
-            let id = yield runCreate(model, r.body);
+            let id = yield runCreate(model, r2.body);
 
             return created({ id });
 
@@ -292,13 +307,19 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    search = (req: Request): Action<void> => {
+    search = (r: Request): Action<void> => {
 
         let that = this;
 
         return doAction(function*() {
 
-            yield that.beforeSearch(yield that.before(req));
+            let r1 = yield that.before(r);
+
+            if (r1 == null) return noop();
+
+            let r2 = yield that.beforeSearch(r1);
+
+            if (r2 == null) return noop();
 
             let model = yield that.getModel();
 
@@ -323,17 +344,23 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    update = (req: Request): Action<void> => {
+    update = (r: Request): Action<void> => {
 
         let that = this;
 
         return doAction(function*() {
 
-            let r = yield that.beforeUpdate(yield that.before(req));
+            let r1 = yield that.before(r);
+
+            if (r1 == null) return noop();
+
+            let r2 = yield that.beforeSearch(r1);
+
+            if (r2 == null) return noop();
 
             let model = yield that.getModel();
 
-            let yes = yield runUpdate(model, <Id>r.params.id, r.body);
+            let yes = yield runUpdate(model, <Id>r2.params.id, r2.body);
 
             return yes ? ok() : notFound();
 
@@ -341,17 +368,23 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    get = (req: Request): Action<void> => {
+    get = (r: Request): Action<void> => {
 
         let that = this;
 
         return doAction(function*() {
 
-            let r = yield that.beforeGet(yield that.before(req));
+            let r1 = yield that.before(r);
+
+            if (r1 == null) return noop();
+
+            let r2 = yield that.beforeGet(r1);
+
+            if (r2 == null) return noop();
 
             let model = yield that.getModel();
 
-            let mdoc = yield runGet(model, <Id>r.params.id);
+            let mdoc = yield runGet(model, <Id>r2.params.id);
 
             return mdoc.isJust() ? ok(mdoc.get()) : notFound();
 
@@ -359,17 +392,23 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    remove = (req: Request): Action<void> => {
+    remove = (r: Request): Action<void> => {
 
         let that = this;
 
         return doAction(function*() {
 
-            let r = yield that.beforeRemove(yield that.before(req));
+            let r1 = yield that.before(r);
+
+            if (r1 == null) return noop();
+
+            let r2 = yield that.beforeRemove(r1);
+
+            if (r2 == null) return noop();
 
             let model = yield that.getModel();
 
-            let yes = yield runRemove(model, <Id>r.params.id);
+            let yes = yield runRemove(model, <Id>r2.params.id);
 
             return yes ? ok() : notFound();
 

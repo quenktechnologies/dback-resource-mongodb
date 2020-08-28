@@ -4,6 +4,14 @@ import { Action } from '@quenk/tendril/lib/app/api';
 import { Request, Filter } from '@quenk/tendril/lib/app/api/request';
 import { Id, Model } from '@quenk/dback-model-mongodb';
 /**
+ * HookResult is the result of applying one of the BaseResource hooks.
+ *
+ * If the result is an Action yielding no value, execution stops assuming
+ * a response was sent to the client, if the Action yields a Request, execution
+ * will continue after the hook.
+ */
+export declare type HookResult = Action<void> | Action<Request>;
+/**
  * SearchKeys are the PRS keys used by Resource#search.
  */
 export declare const enum SearchKeys {
@@ -157,32 +165,32 @@ export declare abstract class BaseResource<T extends Object> implements Resource
      *
      * It can be overriden to execute other middleware.
      */
-    before(r: Request): Action<Request>;
+    before(r: Request): HookResult;
     /**
      * beforeCreate is executed before create().
      */
-    beforeCreate(r: Request): Action<Request>;
+    beforeCreate(r: Request): HookResult;
     /**
      * beforeSearch is executed before search().
      */
-    beforeSearch(r: Request): Action<Request>;
+    beforeSearch(r: Request): HookResult;
     /**
      * beforeUpdate is executed before update().
      */
-    beforeUpdate(r: Request): Action<Request>;
+    beforeUpdate(r: Request): HookResult;
     /**
      * beforeGet is executed before get().
      */
-    beforeGet(r: Request): Action<Request>;
+    beforeGet(r: Request): HookResult;
     /**
      * beforeRemove is executed before remove().
      */
-    beforeRemove(r: Request): Action<Request>;
-    create: (req: Request) => Action<void>;
-    search: (req: Request) => Action<void>;
-    update: (req: Request) => Action<void>;
-    get: (req: Request) => Action<void>;
-    remove: (req: Request) => Action<void>;
+    beforeRemove(r: Request): HookResult;
+    create: (r: Request) => Action<void>;
+    search: (r: Request) => Action<void>;
+    update: (r: Request) => Action<void>;
+    get: (r: Request) => Action<void>;
+    remove: (r: Request) => Action<void>;
 }
 /**
  * runCreate creates a new document in the provided Model's collection.
