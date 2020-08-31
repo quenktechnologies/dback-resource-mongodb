@@ -428,7 +428,7 @@ export const runCreate =
     <T extends Object>(model: Model<T>, data: T): Action<Id> =>
         doAction<Id>(function*() {
 
-            return value(yield model.create(data));
+            return value(yield fork( model.create(data)));
 
         });
 
