@@ -159,6 +159,15 @@ export interface Resource<T extends Object> {
  */
 export declare abstract class BaseResource<T extends Object> implements Resource<T> {
     abstract getModel(): Action<Model<T>>;
+    isAborted: boolean;
+    /**
+     * abort can be called in a before*() handler to signal that the
+     * operation has been cancelled and should proceed no further.
+     *
+     * Logic calling this method should ensure that an appropriate response
+     * is sent to the user.
+     */
+    abort(): void;
     /**
      * before is a filter that is executed before each of the CSUGR
      * methods.

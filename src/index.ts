@@ -226,6 +226,21 @@ export abstract class BaseResource<T extends Object>
 
     abstract getModel(): Action<Model<T>>
 
+    isAborted = false;
+
+    /**
+     * abort can be called in a before*() handler to signal that the
+     * operation has been cancelled and should proceed no further.
+     *
+     * Logic calling this method should ensure that an appropriate response
+     * is sent to the user.
+     */
+    abort() {
+
+        this.isAborted = true;
+
+    }
+
     /**
      * before is a filter that is executed before each of the CSUGR
      * methods.
@@ -289,17 +304,17 @@ export abstract class BaseResource<T extends Object>
 
         return doAction<void>(function*() {
 
-            let r1 = yield that.before(r);
+            r = yield that.before(r);
 
-            if (r1 == null) return noop();
+            if (that.isAborted) return noop();
 
-            let r2 = yield that.beforeCreate(r1);
+            r = yield that.beforeCreate(r);
 
-            if (r2 == null) return noop();
+            if (that.isAborted) return noop();
 
             let model = yield that.getModel();
 
-            let id = yield runCreate(model, r2.body);
+            let id = yield runCreate(model, r.body);
 
             return created({ id });
 
@@ -313,13 +328,13 @@ export abstract class BaseResource<T extends Object>
 
         return doAction(function*() {
 
-            let r1 = yield that.before(r);
+             r = yield that.before(r);
 
-            if (r1 == null) return noop();
+            if (that.isAborted) return noop();
 
-            let r2 = yield that.beforeSearch(r1);
+             r = yield that.beforeSearch(r);
 
-            if (r2 == null) return noop();
+            if (that.isAborted) return noop();
 
             let model = yield that.getModel();
 
@@ -350,17 +365,17 @@ export abstract class BaseResource<T extends Object>
 
         return doAction(function*() {
 
-            let r1 = yield that.before(r);
+            r = yield that.before(r);
 
-            if (r1 == null) return noop();
+            if (that.isAborted) return noop();
 
-            let r2 = yield that.beforeSearch(r1);
+             r = yield that.beforeSearch(r);
 
-            if (r2 == null) return noop();
+            if (that.isAborted) return noop();
 
             let model = yield that.getModel();
 
-            let yes = yield runUpdate(model, <Id>r2.params.id, r2.body);
+            let yes = yield runUpdate(model, <Id>r.params.id, r.body);
 
             return yes ? ok() : notFound();
 
@@ -374,17 +389,17 @@ export abstract class BaseResource<T extends Object>
 
         return doAction(function*() {
 
-            let r1 = yield that.before(r);
+            r = yield that.before(r);
 
-            if (r1 == null) return noop();
+            if (that.isAborted) return noop();
 
-            let r2 = yield that.beforeGet(r1);
+            r = yield that.beforeGet(r);
 
-            if (r2 == null) return noop();
+            if (that.isAborted) return noop();
 
             let model = yield that.getModel();
 
-            let mdoc = yield runGet(model, <Id>r2.params.id);
+            let mdoc = yield runGet(model, <Id>r.params.id);
 
             return mdoc.isJust() ? ok(mdoc.get()) : notFound();
 
@@ -398,17 +413,17 @@ export abstract class BaseResource<T extends Object>
 
         return doAction(function*() {
 
-            let r1 = yield that.before(r);
+            r = yield that.before(r);
 
-            if (r1 == null) return noop();
+            if (that.isAborted) return noop();
 
-            let r2 = yield that.beforeRemove(r1);
+            r = yield that.beforeRemove(r);
 
-            if (r2 == null) return noop();
+            if (that.isAborted) return noop();
 
             let model = yield that.getModel();
 
-            let yes = yield runRemove(model, <Id>r2.params.id);
+            let yes = yield runRemove(model, <Id>r.params.id);
 
             return yes ? ok() : notFound();
 
@@ -428,7 +443,7 @@ export const runCreate =
     <T extends Object>(model: Model<T>, data: T): Action<Id> =>
         doAction<Id>(function*() {
 
-            return value(yield fork( model.create(data)));
+            return value(yield fork(model.create(data)));
 
         });
 
