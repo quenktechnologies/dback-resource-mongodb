@@ -1,5 +1,3 @@
-import * as prs from '@quenk/tendril/lib/app/api/storage/prs';
-
 import { merge, empty } from '@quenk/noni/lib/data/record';
 import { Object } from '@quenk/noni/lib/data/jsonx';
 import { Maybe } from '@quenk/noni/lib/data/maybe';
@@ -17,12 +15,6 @@ import { Id, Model } from '@quenk/dback-model-mongodb';
 const defaultSearchParams =
     { page: 1, limit: 1000 * 1000, query: {}, sort: {}, fields: {} };
 
-const defaultUpdateParams = { query: {} };
-
-const defaultGetParams = { query: {}, fields: {} };
-
-const defaultRemoveParams = { query: {} };
-
 /**
  * HookResult is the result of applying one of the BaseResource hooks.
  *
@@ -32,49 +24,90 @@ const defaultRemoveParams = { query: {} };
  */
 export type HookResult = Action<void> | Action<Request>;
 
+export const KEY_SEARCH_PARAMS = 'resource.mongodb.search.params';
+export const KEY_UPDATE_PARAMS = 'resource.mongodb.update.params';
+export const KEY_GET_PARAMS = 'resource.mongodb.search.params';
+export const KEY_REMOVE_PARAMS = 'resource.mongodb.remove.params';
+
 /**
- * SearchKeys are the PRS keys used by Resource#search.
+ * SearchParams used in search query execution.
  */
-export const enum SearchKeys {
+export interface SearchParams {
 
-    query = 'resource.mongodb.search.query',
+    /**
+     * query object used to filter documents.
+     */
+    query: Object,
 
-    page = 'resource.mongodb.search.page',
+    /**
+     * page to begin retrieving documents.
+     */
+    page: number,
 
-    limit = 'resource.mongodb.search.limit',
+    /**
+     * limit on documents to retreive.
+     *
+     * Paging is based on this number and not the total possible result.
+     */
+    limit: number,
 
-    sort = 'resource.mongodb.search.sort',
+    /**
+     * sort object.
+     */
+    sort: Object
 
-    fields = 'resource.mongodb.search.fields'
+    /**
+     * fields to retrieve for each document.
+     */
+    fields: object
 
 }
 
 /**
- * UpdateKeys are the PRS keys used by Resource#update.
+ * UpdateParams used in update operations.
  */
-export const enum UpdateKeys {
+export interface UpdateParams {
 
-    query = 'resource.mongodb.update.query',
+    /**
+     * query object used to further specify the target object.
+     */
+    query: Object,
+
+    /**
+     * changes to be made via the $set operation.
+     *
+     * This is in addition to the request body.
+     */
+    changes: Object
 
 }
 
 /**
- * GetKeys are the PRS keys used by Resource#get.
+ * GetParams used in single result search operations.
  */
-export const enum GetKeys {
+export interface GetParams {
 
-    query = 'resource.mongodb.get.query',
+    /**
+     * query object used to further specify the target object.
+     */
+    query: Object,
 
-    fields = 'resource.mongodb.get.fields'
+    /**
+     * fields to project on.
+     */
+    fields: object
 
 }
 
 /**
- * RemoveKeys are the PRS keys used by Resource#remove.
+ * RemoveParams used in remove operations.
  */
-export const enum RemoveKeys {
+export interface RemoveParams {
 
-    query = 'resource.mongodb.remove.query'
+    /**
+     * query object used to further specify the target object.
+     */
+    query: Object,
 
 }
 
@@ -120,7 +153,8 @@ export interface TotalSection {
 /**
  * SearchResult is the object created after a successful search.
  *
- * It houses the actual data as well as some additional meta information.
+ * It houses the actual data as well as some additional meta information related
+ * to paging.
  */
 export interface SearchResult<T extends Object> {
 
@@ -159,9 +193,13 @@ export interface SearchResult<T extends Object> {
 /**
  * Resource is the main interface of this module.
  *
- * It provides a basic JSON enable CRUD interface for a collection in the 
- * database. Extend BaseResource to benefit from the base implementation.
- * Additional methods can be added specific to your application's needs.
+ * It provides a basic JSON based CSUGR interface for a target collection.
+ * BaseResource provides a base implementation with hooks for additional
+ * processing.
+ *
+ * Warning: All data passed to this interface SHOULD BE PROPERLY VALIDATED!!
+ * Otherwise users may be able to manipulate queries and have direct access
+ * to the database.
  */
 export interface Resource<T extends Object> {
 
@@ -174,16 +212,16 @@ export interface Resource<T extends Object> {
      * create a new document in the Resource's collection.
      *
      * The document data is read from the request body.
-     * A created response is sent with the id of the document once successful.
+     * A created response is sent with the id of the document if successful.
      */
     create: Filter<void>
 
     /**
      * search for a document in the Resource's collection.
      *
-     * The query parameters are built using the [[SearchKeys]] PRS keys.
+     * The query parameters are built using the [[KEY_SEARCH_PARAMS]] PRS keys.
      * A successful result with found documents sends a [[SearchResult]], if
-     * there are no matches the NoContent response is sent.
+     * there are no matches the [[NoContent]] response is sent.
      */
     search: Filter<void>
 
@@ -191,19 +229,22 @@ export interface Resource<T extends Object> {
      * update a single document in the Resource's collection.
      *
      * The document id is sourced from Request#params.id and the change data 
-     * from the request body.
+     * from the request body. Additional conditions can be specified via the
+     * [[KEY_UPDATE_PARAMS]] PRS key.
      *
-     * A successful update will result in an Success response whereas a
-     * NotFound is sent if the update was not applied.
+     * A successful update will result in an [[Ok]] response whereas a
+     * [[NotFound]] is sent if the update was not applied.
      */
     update: Filter<void>
 
     /**
      * get a single document in the Resource's collection.
      *
-     * The document's id is sourced from Request#params.id. A successful fetch
-     * will respond with a Success with the document as body otherwise a 
-     * NotFound is sent.
+     * The document's id is sourced from Request#params.id. 
+     * Additional conditions can be specified via the [[KEY_GET_PARAMS]] PRS key.
+     *
+     * A successful fetch will respond with [[Ok]] with the document as body 
+     * otherwise [[NotFound]] is sent.
      */
     get: Filter<void>
 
@@ -211,7 +252,10 @@ export interface Resource<T extends Object> {
      * remove a single document in the Resource's collection.
      *
      * The document's id is sourced from Request#params.id.a
-     * A successful delete will respond with a Success or NotFound if the
+     * Additional conditions can be specified via the [[KEY_REMOVE_PARAMS]] PRS
+     * key.
+     *
+     * A successful delete will respond with a [[Ok]] or [[NotFound]] if the
      * document was not found.
      */
     remove: Filter<void>
@@ -220,6 +264,10 @@ export interface Resource<T extends Object> {
 
 /**
  * BaseResource provides the default Resource implementation.
+ *
+ * Warning: All data passed to this class MUST BE PROPERLY VALIDATED!!
+ * Otherwise users may be able to manipulate queries and have direct access
+ * to the database.
  */
 export abstract class BaseResource<T extends Object>
     implements Resource<T> {
@@ -314,7 +362,7 @@ export abstract class BaseResource<T extends Object>
 
             let model = yield that.getModel();
 
-            let id = yield runCreate(model, r.body);
+            let id = yield runCreate(model, <Object>r.body);
 
             return created({ id });
 
@@ -328,21 +376,22 @@ export abstract class BaseResource<T extends Object>
 
         return doAction(function*() {
 
-             r = yield that.before(r);
+            r = yield that.before(r);
 
             if (that.isAborted) return noop();
 
-             r = yield that.beforeSearch(r);
+            r = yield that.beforeSearch(r);
 
             if (that.isAborted) return noop();
 
             let model = yield that.getModel();
 
-            let mquery = yield prs.get(SearchKeys.query);
+            let mparams = r.prs.get(KEY_SEARCH_PARAMS);
 
-            if (mquery.isJust()) {
+            if (mparams.isJust()) {
 
-                let result = yield runSearch(model, mquery.get());
+                let result = yield runSearch(model,
+                    <SearchParams><object>mparams.get());
 
                 if (result.data.length > 0)
                     return ok(result);
@@ -369,13 +418,22 @@ export abstract class BaseResource<T extends Object>
 
             if (that.isAborted) return noop();
 
-             r = yield that.beforeSearch(r);
+            r = yield that.beforeSearch(r);
 
             if (that.isAborted) return noop();
 
+            let params = r.prs.getOrElse(
+                KEY_UPDATE_PARAMS,
+                { query: {}, changes: {} }
+            );
+
             let model = yield that.getModel();
 
-            let yes = yield runUpdate(model, <Id>r.params.id, r.body);
+            let yes = yield runUpdate(
+                model,
+                <Id>r.params.id,
+                <Object>r.body,
+                <UpdateParams><object>params);
 
             return yes ? ok() : notFound();
 
@@ -397,9 +455,18 @@ export abstract class BaseResource<T extends Object>
 
             if (that.isAborted) return noop();
 
+            let params = r.prs.getOrElse(KEY_GET_PARAMS, {
+
+                query: {},
+
+                fields: {},
+
+            });
+
             let model = yield that.getModel();
 
-            let mdoc = yield runGet(model, <Id>r.params.id);
+            let mdoc = yield runGet(model, <Id>r.params.id,
+                <GetParams><object>params);
 
             return mdoc.isJust() ? ok(mdoc.get()) : notFound();
 
@@ -421,9 +488,14 @@ export abstract class BaseResource<T extends Object>
 
             if (that.isAborted) return noop();
 
+            let params = r.prs.getOrElse(KEY_REMOVE_PARAMS, {
+                query: {},
+            });
+
             let model = yield that.getModel();
 
-            let yes = yield runRemove(model, <Id>r.params.id);
+            let yes = yield runRemove(model, <Id>r.params.id, 
+              <RemoveParams><object>params);
 
             return yes ? ok() : notFound();
 
@@ -436,8 +508,8 @@ export abstract class BaseResource<T extends Object>
 /**
  * runCreate creates a new document in the provided Model's collection.
  *
- * The data provided SHOULD be validated according to the application's own 
- * rules.
+ * It is important the data supplied to this function is properly validated
+ * or bad things can happen.
  */
 export const runCreate =
     <T extends Object>(model: Model<T>, data: T): Action<Id> =>
@@ -448,27 +520,27 @@ export const runCreate =
         });
 
 /**
- * runSearch for documents in the database that match the specified query.
+ * runSearch for documents in the database that match the specified 
+ * SearchParams.
  *
- * [[SearchKeys]] can be used to further configure the executed query.
+ * It is important the data supplied to this function is properly validated
+ * or bad things can happen.
  */
 export const runSearch = <T extends Object>
-    (model: Model<T>, query: Object): Action<SearchResult<T>> =>
+    (model: Model<T>, params: SearchParams): Action<SearchResult<T>> =>
     doAction<SearchResult<T>>(function*() {
 
-        let { page, limit, sort, fields } = {
+        let { query, page, limit, sort, fields } = {
 
-            page: yield prs.getOrElse(SearchKeys.page,
-                defaultSearchParams.page),
+            query: params.query || {},
 
-            limit: yield prs.getOrElse(SearchKeys.limit,
-                defaultSearchParams.limit),
+            page: params.page || defaultSearchParams.page,
 
-            sort: yield prs.getOrElse(SearchKeys.sort,
-                defaultSearchParams.sort),
+            limit: params.limit || defaultSearchParams.limit,
 
-            fields: yield prs.getOrElse(SearchKeys.fields,
-                defaultSearchParams.fields)
+            sort: params.sort || defaultSearchParams.sort,
+
+            fields: params.fields || defaultSearchParams.fields
 
         };
 
@@ -526,53 +598,51 @@ export const runSearch = <T extends Object>
     });
 
 /**
- * runUpdate updates a single document by id using the provided changes.
+ * runUpdate updates a single document by id.
  *
- * The operation will be carried out using the $set operator. The changes
- * should be validated by the application before passing to this function.
- * [[UpdateKeys]] can be set to customize the operation.
+ * The UpdateParams may be specified to add further details to the operation.
+ *
+ * It is important the data supplied to this function is properly validated
+ * or bad things can happen.
  */
-export const runUpdate = <T extends Object>
-    (model: Model<T>, id: Id, changes: Object): Action<boolean> =>
-    doAction<boolean>(function*() {
+export const runUpdate =
+    <T extends Object>(
+        model: Model<T>,
+        id: Id,
+        changes: Object,
+        params: UpdateParams): Action<boolean> =>
+        doAction<boolean>(function*() {
 
-        if (empty(changes))
-            return value(false);
+            if (empty(changes)) return value(false);
 
-        let { query } = {
+            let query = params.query || {};
 
-            query: yield prs.getOrElse(UpdateKeys.query,
-                defaultUpdateParams.query),
+            changes = merge(changes, params.changes || {});
 
-        };
+            let success = yield fork(model.update(id, flatten(changes), query));
 
-        let success =
-            yield fork(model.update(id, flatten(changes), query));
+            return value(success);
 
-        return value(success);
-
-    });
+        });
 
 /**
  * runGet retrieves a single document given its id.
  *
- * Additional query parameters may be included using the [[GetKeys]] PRS keys.
+ * Additional query parameters may be included using the GetParams parameter.
+ *
+ * It is important the data supplied to this function is properly validated
+ * or bad things can happen.
  */
 export const runGet =
-    <T extends Object>(model: Model<T>, id: Id): Action<Maybe<T>> =>
+    <T extends Object>(
+        model: Model<T>,
+        id: Id,
+        params: GetParams): Action<Maybe<T>> =>
         doAction<Maybe<T>>(function*() {
 
-            let { query, fields } = {
+            let query = params.query || {};
 
-                query: yield prs.getOrElse(GetKeys.query,
-                    defaultGetParams.query),
-
-                fields: yield prs.getOrElse(GetKeys.fields,
-                    defaultGetParams.fields)
-
-            };
-
-            let projection = merge({ _id: 0 }, fields);
+            let projection = merge({ _id: 0 }, params.fields || {});
 
             let maybeData =
                 yield fork(model.get(id, query, { projection }));
@@ -584,18 +654,19 @@ export const runGet =
 /**
  * runRemove a single document by its key.
  *
- * Additional query parameters may be included via [[RemoveKeys]] PRS keys.
+ * Additional query parameters may be included via the RemoveParams parameter.
+ *
+ * It is important the data supplied to this function is properly validated
+ * or bad things can happen.
  */
 export const runRemove =
-    <T extends Object>(model: Model<T>, id: Id): Action<boolean> =>
+    <T extends Object>(
+        model: Model<T>,
+        id: Id,
+        params: RemoveParams): Action<boolean> =>
         doAction<boolean>(function*() {
 
-            let { query } = {
-
-                query: yield prs.getOrElse(RemoveKeys.query,
-                    defaultRemoveParams.query),
-
-            };
+            let { query } = { query: params.query || {} };
 
             let yes = yield fork(model.remove(id, query));
 

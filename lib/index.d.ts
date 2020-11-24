@@ -11,34 +11,73 @@ import { Id, Model } from '@quenk/dback-model-mongodb';
  * will continue after the hook.
  */
 export declare type HookResult = Action<void> | Action<Request>;
+export declare const KEY_SEARCH_PARAMS = "resource.mongodb.search.params";
+export declare const KEY_UPDATE_PARAMS = "resource.mongodb.update.params";
+export declare const KEY_GET_PARAMS = "resource.mongodb.search.params";
+export declare const KEY_REMOVE_PARAMS = "resource.mongodb.remove.params";
 /**
- * SearchKeys are the PRS keys used by Resource#search.
+ * SearchParams used in search query execution.
  */
-export declare const enum SearchKeys {
-    query = "resource.mongodb.search.query",
-    page = "resource.mongodb.search.page",
-    limit = "resource.mongodb.search.limit",
-    sort = "resource.mongodb.search.sort",
-    fields = "resource.mongodb.search.fields"
+export interface SearchParams {
+    /**
+     * query object used to filter documents.
+     */
+    query: Object;
+    /**
+     * page to begin retrieving documents.
+     */
+    page: number;
+    /**
+     * limit on documents to retreive.
+     *
+     * Paging is based on this number and not the total possible result.
+     */
+    limit: number;
+    /**
+     * sort object.
+     */
+    sort: Object;
+    /**
+     * fields to retrieve for each document.
+     */
+    fields: object;
 }
 /**
- * UpdateKeys are the PRS keys used by Resource#update.
+ * UpdateParams used in update operations.
  */
-export declare const enum UpdateKeys {
-    query = "resource.mongodb.update.query"
+export interface UpdateParams {
+    /**
+     * query object used to further specify the target object.
+     */
+    query: Object;
+    /**
+     * changes to be made via the $set operation.
+     *
+     * This is in addition to the request body.
+     */
+    changes: Object;
 }
 /**
- * GetKeys are the PRS keys used by Resource#get.
+ * GetParams used in single result search operations.
  */
-export declare const enum GetKeys {
-    query = "resource.mongodb.get.query",
-    fields = "resource.mongodb.get.fields"
+export interface GetParams {
+    /**
+     * query object used to further specify the target object.
+     */
+    query: Object;
+    /**
+     * fields to project on.
+     */
+    fields: object;
 }
 /**
- * RemoveKeys are the PRS keys used by Resource#remove.
+ * RemoveParams used in remove operations.
  */
-export declare const enum RemoveKeys {
-    query = "resource.mongodb.remove.query"
+export interface RemoveParams {
+    /**
+     * query object used to further specify the target object.
+     */
+    query: Object;
 }
 /**
  * CurrentSection holds pagination information on the current page.
@@ -73,7 +112,8 @@ export interface TotalSection {
 /**
  * SearchResult is the object created after a successful search.
  *
- * It houses the actual data as well as some additional meta information.
+ * It houses the actual data as well as some additional meta information related
+ * to paging.
  */
 export interface SearchResult<T extends Object> {
     /**
@@ -103,9 +143,13 @@ export interface SearchResult<T extends Object> {
 /**
  * Resource is the main interface of this module.
  *
- * It provides a basic JSON enable CRUD interface for a collection in the
- * database. Extend BaseResource to benefit from the base implementation.
- * Additional methods can be added specific to your application's needs.
+ * It provides a basic JSON based CSUGR interface for a target collection.
+ * BaseResource provides a base implementation with hooks for additional
+ * processing.
+ *
+ * Warning: All data passed to this interface SHOULD BE PROPERLY VALIDATED!!
+ * Otherwise users may be able to manipulate queries and have direct access
+ * to the database.
  */
 export interface Resource<T extends Object> {
     /**
@@ -116,46 +160,56 @@ export interface Resource<T extends Object> {
      * create a new document in the Resource's collection.
      *
      * The document data is read from the request body.
-     * A created response is sent with the id of the document once successful.
+     * A created response is sent with the id of the document if successful.
      */
     create: Filter<void>;
     /**
      * search for a document in the Resource's collection.
      *
-     * The query parameters are built using the [[SearchKeys]] PRS keys.
+     * The query parameters are built using the [[KEY_SEARCH_PARAMS]] PRS keys.
      * A successful result with found documents sends a [[SearchResult]], if
-     * there are no matches the NoContent response is sent.
+     * there are no matches the [[NoContent]] response is sent.
      */
     search: Filter<void>;
     /**
      * update a single document in the Resource's collection.
      *
      * The document id is sourced from Request#params.id and the change data
-     * from the request body.
+     * from the request body. Additional conditions can be specified via the
+     * [[KEY_UPDATE_PARAMS]] PRS key.
      *
-     * A successful update will result in an Success response whereas a
-     * NotFound is sent if the update was not applied.
+     * A successful update will result in an [[Ok]] response whereas a
+     * [[NotFound]] is sent if the update was not applied.
      */
     update: Filter<void>;
     /**
      * get a single document in the Resource's collection.
      *
-     * The document's id is sourced from Request#params.id. A successful fetch
-     * will respond with a Success with the document as body otherwise a
-     * NotFound is sent.
+     * The document's id is sourced from Request#params.id.
+     * Additional conditions can be specified via the [[KEY_GET_PARAMS]] PRS key.
+     *
+     * A successful fetch will respond with [[Ok]] with the document as body
+     * otherwise [[NotFound]] is sent.
      */
     get: Filter<void>;
     /**
      * remove a single document in the Resource's collection.
      *
      * The document's id is sourced from Request#params.id.a
-     * A successful delete will respond with a Success or NotFound if the
+     * Additional conditions can be specified via the [[KEY_REMOVE_PARAMS]] PRS
+     * key.
+     *
+     * A successful delete will respond with a [[Ok]] or [[NotFound]] if the
      * document was not found.
      */
     remove: Filter<void>;
 }
 /**
  * BaseResource provides the default Resource implementation.
+ *
+ * Warning: All data passed to this class MUST BE PROPERLY VALIDATED!!
+ * Otherwise users may be able to manipulate queries and have direct access
+ * to the database.
  */
 export declare abstract class BaseResource<T extends Object> implements Resource<T> {
     abstract getModel(): Action<Model<T>>;
@@ -204,33 +258,42 @@ export declare abstract class BaseResource<T extends Object> implements Resource
 /**
  * runCreate creates a new document in the provided Model's collection.
  *
- * The data provided SHOULD be validated according to the application's own
- * rules.
+ * It is important the data supplied to this function is properly validated
+ * or bad things can happen.
  */
 export declare const runCreate: <T extends Object>(model: Model<T>, data: T) => Action<string | number>;
 /**
- * runSearch for documents in the database that match the specified query.
+ * runSearch for documents in the database that match the specified
+ * SearchParams.
  *
- * [[SearchKeys]] can be used to further configure the executed query.
+ * It is important the data supplied to this function is properly validated
+ * or bad things can happen.
  */
-export declare const runSearch: <T extends Object>(model: Model<T>, query: Object) => Action<SearchResult<T>>;
+export declare const runSearch: <T extends Object>(model: Model<T>, params: SearchParams) => Action<SearchResult<T>>;
 /**
- * runUpdate updates a single document by id using the provided changes.
+ * runUpdate updates a single document by id.
  *
- * The operation will be carried out using the $set operator. The changes
- * should be validated by the application before passing to this function.
- * [[UpdateKeys]] can be set to customize the operation.
+ * The UpdateParams may be specified to add further details to the operation.
+ *
+ * It is important the data supplied to this function is properly validated
+ * or bad things can happen.
  */
-export declare const runUpdate: <T extends Object>(model: Model<T>, id: Id, changes: Object) => Action<boolean>;
+export declare const runUpdate: <T extends Object>(model: Model<T>, id: Id, changes: Object, params: UpdateParams) => Action<boolean>;
 /**
  * runGet retrieves a single document given its id.
  *
- * Additional query parameters may be included using the [[GetKeys]] PRS keys.
+ * Additional query parameters may be included using the GetParams parameter.
+ *
+ * It is important the data supplied to this function is properly validated
+ * or bad things can happen.
  */
-export declare const runGet: <T extends Object>(model: Model<T>, id: Id) => Action<Maybe<T>>;
+export declare const runGet: <T extends Object>(model: Model<T>, id: Id, params: GetParams) => Action<Maybe<T>>;
 /**
  * runRemove a single document by its key.
  *
- * Additional query parameters may be included via [[RemoveKeys]] PRS keys.
+ * Additional query parameters may be included via the RemoveParams parameter.
+ *
+ * It is important the data supplied to this function is properly validated
+ * or bad things can happen.
  */
-export declare const runRemove: <T extends Object>(model: Model<T>, id: Id) => Action<boolean>;
+export declare const runRemove: <T extends Object>(model: Model<T>, id: Id, params: RemoveParams) => Action<boolean>;

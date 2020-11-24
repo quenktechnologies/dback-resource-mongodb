@@ -12,21 +12,20 @@
   "author": "Lasana Murray <info@quenk.com> (http://quenk.com)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@quenk/noni": "^1.40.6",
-    "@quenk/safe-mongodb": "^0.3.2",
-    "@quenk/tendril": "^0.41.5"
+    "@quenk/noni": "^1.40.14",
+    "@quenk/dback-model-mongodb": "^0.1.6",
+    "@quenk/tendril": "^0.42.0"
   },
   "devDependencies": {
-    "@quenk/dback-model-mongodb": "^0.1.4",
     "@types/cookie-parser": "^1.4.2",
-    "@types/csurf": "^1.9.36",
-    "@types/express": "^4.17.7",
-    "@types/express-session": "^1.17.0",
-    "@types/mongodb": "^3.5.26",
-    "@types/morgan": "^1.9.1",
-    "@types/node": "^14.6.2",
+    "@types/csurf": "^1.11.0",
+    "@types/express": "^4.17.9",
+    "@types/express-session": "^1.17.3",
+    "@types/mongodb": "^3.5.34",
+    "@types/morgan": "^1.9.2",
+    "@types/node": "^14.14.9",
     "@types/uuid": "^8.3.0",
-    "typedoc": "^0.19.0",
-    "typescript": "^4.0.2"
+    "typedoc": "^0.19.2",
+    "typescript": "^4.1.2"
   }
 }
