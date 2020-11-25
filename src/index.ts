@@ -206,7 +206,7 @@ export interface Resource<T extends Object> {
     /**
      * getModel provides an instance of the Resource's main Model.
      */
-    getModel(): Action<Model<T>>
+    getModel(): Model<T>
 
     /**
      * create a new document in the Resource's collection.
@@ -272,7 +272,7 @@ export interface Resource<T extends Object> {
 export abstract class BaseResource<T extends Object>
     implements Resource<T> {
 
-    abstract getModel(): Action<Model<T>>
+    abstract getModel(): Model<T>
 
     isAborted = false;
 
@@ -360,9 +360,9 @@ export abstract class BaseResource<T extends Object>
 
             if (that.isAborted) return noop();
 
-            let model = yield that.getModel();
+            let model = that.getModel();
 
-            let id = yield runCreate(model, <Object>r.body);
+            let id = yield runCreate<T>(model, <T><Object>r.body);
 
             return created({ id });
 
@@ -384,7 +384,7 @@ export abstract class BaseResource<T extends Object>
 
             if (that.isAborted) return noop();
 
-            let model = yield that.getModel();
+            let model = that.getModel();
 
             let mparams = r.prs.get(KEY_SEARCH_PARAMS);
 
@@ -427,7 +427,7 @@ export abstract class BaseResource<T extends Object>
                 { query: {}, changes: {} }
             );
 
-            let model = yield that.getModel();
+            let model = that.getModel();
 
             let yes = yield runUpdate(
                 model,
@@ -463,7 +463,7 @@ export abstract class BaseResource<T extends Object>
 
             });
 
-            let model = yield that.getModel();
+            let model = that.getModel();
 
             let mdoc = yield runGet(model, <Id>r.params.id,
                 <GetParams><object>params);
@@ -492,10 +492,10 @@ export abstract class BaseResource<T extends Object>
                 query: {},
             });
 
-            let model = yield that.getModel();
+            let model = that.getModel();
 
-            let yes = yield runRemove(model, <Id>r.params.id, 
-              <RemoveParams><object>params);
+            let yes = yield runRemove(model, <Id>r.params.id,
+                <RemoveParams><object>params);
 
             return yes ? ok() : notFound();
 

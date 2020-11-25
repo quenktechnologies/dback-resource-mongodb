@@ -155,7 +155,7 @@ export interface Resource<T extends Object> {
     /**
      * getModel provides an instance of the Resource's main Model.
      */
-    getModel(): Action<Model<T>>;
+    getModel(): Model<T>;
     /**
      * create a new document in the Resource's collection.
      *
@@ -212,7 +212,7 @@ export interface Resource<T extends Object> {
  * to the database.
  */
 export declare abstract class BaseResource<T extends Object> implements Resource<T> {
-    abstract getModel(): Action<Model<T>>;
+    abstract getModel(): Model<T>;
     isAborted: boolean;
     /**
      * abort can be called in a before*() handler to signal that the
