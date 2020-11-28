@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BaseResource | backdey-resource-mongodb</title>
-	<meta name="description" content="Documentation for backdey-resource-mongodb">
+	<title>BaseResource | @quenk/dback-resource-mongodb</title>
+	<meta name="description" content="Documentation for @quenk/dback-resource-mongodb">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">backdey-resource-mongodb</a>
+					<a href="../index.html" class="title">@quenk/dback-resource-mongodb</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -70,6 +70,9 @@
 					<div class="lead">
 						<p>BaseResource provides the default Resource implementation.</p>
 					</div>
+					<p>Warning: All data passed to this class MUST BE PROPERLY VALIDATED!!
+						Otherwise users may be able to manipulate queries and have direct access
+					to the database.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-type-parameters">
@@ -99,20 +102,21 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_index_.baseresource.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.baseresource.html#dbid" class="tsd-kind-icon">dbid</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.baseresource.html#isaborted" class="tsd-kind-icon">is<wbr>Aborted</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.baseresource.html#abort" class="tsd-kind-icon">abort</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.baseresource.html#before" class="tsd-kind-icon">before</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.baseresource.html#beforecreate" class="tsd-kind-icon">before<wbr>Create</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.baseresource.html#beforeget" class="tsd-kind-icon">before<wbr>Get</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.baseresource.html#beforeremove" class="tsd-kind-icon">before<wbr>Remove</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.baseresource.html#beforesearch" class="tsd-kind-icon">before<wbr>Search</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.baseresource.html#beforeupdate" class="tsd-kind-icon">before<wbr>Update</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.baseresource.html#create" class="tsd-kind-icon">create</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.baseresource.html#get" class="tsd-kind-icon">get</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.baseresource.html#getmodel" class="tsd-kind-icon">get<wbr>Model</a></li>
@@ -125,40 +129,14 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Base<wbr>Resource<span class="tsd-signature-symbol">(</span>dbid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_index_.baseresource.html" class="tsd-signature-type">BaseResource</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in index.ts:227</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>dbid: <span class="tsd-signature-type">string</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="_index_.baseresource.html" class="tsd-signature-type">BaseResource</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="dbid" class="tsd-anchor"></a>
-					<h3>dbid</h3>
-					<div class="tsd-signature tsd-kind-icon">dbid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="isaborted" class="tsd-anchor"></a>
+					<h3>is<wbr>Aborted</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Aborted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in index.ts:229</li>
+							<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L279">index.ts:279</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -166,22 +144,218 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="create" class="tsd-anchor"></a>
-					<h3>create</h3>
+					<a name="abort" class="tsd-anchor"></a>
+					<h3>abort</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">abort<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in index.ts:233</li>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L288">index.ts:288</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>abort can be called in a before*() handler to signal that the
+									operation has been cancelled and should proceed no further.</p>
+								</div>
+								<p>Logic calling this method should ensure that an appropriate response
+								is sent to the user.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="before" class="tsd-anchor"></a>
+					<h3>before</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">before<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L300">index.ts:300</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>before is a filter that is executed before each of the CSUGR
+									methods.</p>
+								</div>
+								<p>It can be overriden to execute other middleware.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="beforecreate" class="tsd-anchor"></a>
+					<h3>before<wbr>Create</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">before<wbr>Create<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L309">index.ts:309</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>beforeCreate is executed before create().</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="beforeget" class="tsd-anchor"></a>
+					<h3>before<wbr>Get</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">before<wbr>Get<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L336">index.ts:336</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>beforeGet is executed before get().</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="beforeremove" class="tsd-anchor"></a>
+					<h3>before<wbr>Remove</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">before<wbr>Remove<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L345">index.ts:345</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>beforeRemove is executed before remove().</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="beforesearch" class="tsd-anchor"></a>
+					<h3>before<wbr>Search</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">before<wbr>Search<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L318">index.ts:318</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>beforeSearch is executed before search().</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="beforeupdate" class="tsd-anchor"></a>
+					<h3>before<wbr>Update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">before<wbr>Update<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L327">index.ts:327</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>beforeUpdate is executed before update().</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="create" class="tsd-anchor"></a>
+					<h3>create</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_index_.resource.html">Resource</a>.<a href="../interfaces/_index_.resource.html#create">create</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L351">index.ts:351</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>_: <span class="tsd-signature-type">Request</span></h5>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -197,8 +371,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_index_.resource.html">Resource</a>.<a href="../interfaces/_index_.resource.html#get">get</a></p>
 								<ul>
-									<li>Defined in index.ts:298</li>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L451">index.ts:451</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -215,17 +390,17 @@
 					<a name="getmodel" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> get<wbr>Model</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Model<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Model<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_index_.resource.html">Resource</a>.<a href="../interfaces/_index_.resource.html#getmodel">getModel</a></p>
 								<ul>
-									<li>Defined in index.ts:231</li>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L277">index.ts:277</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -238,8 +413,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_index_.resource.html">Resource</a>.<a href="../interfaces/_index_.resource.html#remove">remove</a></p>
 								<ul>
-									<li>Defined in index.ts:314</li>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L487">index.ts:487</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -256,19 +432,20 @@
 					<a name="search" class="tsd-anchor"></a>
 					<h3>search</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">search<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">search<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_index_.resource.html">Resource</a>.<a href="../interfaces/_index_.resource.html#search">search</a></p>
 								<ul>
-									<li>Defined in index.ts:251</li>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L378">index.ts:378</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>_: <span class="tsd-signature-type">Request</span></h5>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -284,8 +461,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_index_.resource.html">Resource</a>.<a href="../interfaces/_index_.resource.html#update">update</a></p>
 								<ul>
-									<li>Defined in index.ts:280</li>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L412">index.ts:412</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -313,31 +491,34 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/_index_.createkeys.html" class="tsd-kind-icon">Create<wbr>Keys</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/_index_.getkeys.html" class="tsd-kind-icon">Get<wbr>Keys</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/_index_.removekeys.html" class="tsd-kind-icon">Remove<wbr>Keys</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/_index_.searchkeys.html" class="tsd-kind-icon">Search<wbr>Keys</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/_index_.updatekeys.html" class="tsd-kind-icon">Update<wbr>Keys</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="_index_.baseresource.html" class="tsd-kind-icon">Base<wbr>Resource</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="_index_.baseresource.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_index_.baseresource.html#dbid" class="tsd-kind-icon">dbid</a>
+								<a href="_index_.baseresource.html#isaborted" class="tsd-kind-icon">is<wbr>Aborted</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.baseresource.html#abort" class="tsd-kind-icon">abort</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.baseresource.html#before" class="tsd-kind-icon">before</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.baseresource.html#beforecreate" class="tsd-kind-icon">before<wbr>Create</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.baseresource.html#beforeget" class="tsd-kind-icon">before<wbr>Get</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.baseresource.html#beforeremove" class="tsd-kind-icon">before<wbr>Remove</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.baseresource.html#beforesearch" class="tsd-kind-icon">before<wbr>Search</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.baseresource.html#beforeupdate" class="tsd-kind-icon">before<wbr>Update</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_index_.baseresource.html#create" class="tsd-kind-icon">create</a>
@@ -364,14 +545,44 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="../interfaces/_index_.currentsection.html" class="tsd-kind-icon">Current<wbr>Section</a>
 					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_index_.getparams.html" class="tsd-kind-icon">Get<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_index_.removeparams.html" class="tsd-kind-icon">Remove<wbr>Params</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="../interfaces/_index_.resource.html" class="tsd-kind-icon">Resource</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_index_.searchparams.html" class="tsd-kind-icon">Search<wbr>Params</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="../interfaces/_index_.searchresult.html" class="tsd-kind-icon">Search<wbr>Result</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="../interfaces/_index_.totalsection.html" class="tsd-kind-icon">Total<wbr>Section</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_index_.updateparams.html" class="tsd-kind-icon">Update<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#err_no_query" class="tsd-kind-icon">ERR_<wbr>NO_<wbr>QUERY</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#err_payload_invalid" class="tsd-kind-icon">ERR_<wbr>PAYLOAD_<wbr>INVALID</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#key_get_params" class="tsd-kind-icon">KEY_<wbr>GET_<wbr>PARAMS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#key_remove_params" class="tsd-kind-icon">KEY_<wbr>REMOVE_<wbr>PARAMS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#key_search_params" class="tsd-kind-icon">KEY_<wbr>SEARCH_<wbr>PARAMS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#key_update_params" class="tsd-kind-icon">KEY_<wbr>UPDATE_<wbr>PARAMS</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="../modules/_index_.html#runcreate" class="tsd-kind-icon">run<wbr>Create</a>
@@ -399,19 +610,16 @@
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
 			</ul>
 		</div>
 	</div>

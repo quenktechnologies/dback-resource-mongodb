@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>TotalSection | @quenk/dback-resource-mongodb</title>
+	<title>SearchParams | @quenk/dback-resource-mongodb</title>
 	<meta name="description" content="Documentation for @quenk/dback-resource-mongodb">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules/_index_.html">&quot;index&quot;</a>
 				</li>
 				<li>
-					<a href="_index_.totalsection.html">TotalSection</a>
+					<a href="_index_.searchparams.html">SearchParams</a>
 				</li>
 			</ul>
-			<h1>Interface TotalSection</h1>
+			<h1>Interface SearchParams</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>TotalSection holds pagination information for the entire result.</p>
+						<p>SearchParams used in search query execution.</p>
 					</div>
 				</div>
 			</section>
@@ -76,7 +76,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">TotalSection</span>
+						<span class="target">SearchParams</span>
 					</li>
 				</ul>
 			</section>
@@ -87,8 +87,11 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.totalsection.html#count" class="tsd-kind-icon">count</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.totalsection.html#pages" class="tsd-kind-icon">pages</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.searchparams.html#fields" class="tsd-kind-icon">fields</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.searchparams.html#limit" class="tsd-kind-icon">limit</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.searchparams.html#page" class="tsd-kind-icon">page</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.searchparams.html#query" class="tsd-kind-icon">query</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.searchparams.html#sort" class="tsd-kind-icon">sort</a></li>
 							</ul>
 						</section>
 					</div>
@@ -97,32 +100,78 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="count" class="tsd-anchor"></a>
-					<h3>count</h3>
-					<div class="tsd-signature tsd-kind-icon">count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="fields" class="tsd-anchor"></a>
+					<h3>fields</h3>
+					<div class="tsd-signature tsd-kind-icon">fields<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L146">index.ts:146</a></li>
+							<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L64">index.ts:64</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>count of the entire result set.</p>
+							<p>fields to retrieve for each document.</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="pages" class="tsd-anchor"></a>
-					<h3>pages</h3>
-					<div class="tsd-signature tsd-kind-icon">pages<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="limit" class="tsd-anchor"></a>
+					<h3>limit</h3>
+					<div class="tsd-signature tsd-kind-icon">limit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L151">index.ts:151</a></li>
+							<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L54">index.ts:54</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>pages available for the entire result.</p>
+							<p>limit on documents to retreive.</p>
+						</div>
+						<p>Paging is based on this number and not the total possible result.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="page" class="tsd-anchor"></a>
+					<h3>page</h3>
+					<div class="tsd-signature tsd-kind-icon">page<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L47">index.ts:47</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>page to begin retrieving documents.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="query" class="tsd-anchor"></a>
+					<h3>query</h3>
+					<div class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L42">index.ts:42</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>query object used to filter documents.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="sort" class="tsd-anchor"></a>
+					<h3>sort</h3>
+					<div class="tsd-signature tsd-kind-icon">sort<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L59">index.ts:59</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>sort object.</p>
 						</div>
 					</div>
 				</section>
@@ -156,27 +205,36 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="_index_.resource.html" class="tsd-kind-icon">Resource</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="_index_.searchparams.html" class="tsd-kind-icon">Search<wbr>Params</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="_index_.searchresult.html" class="tsd-kind-icon">Search<wbr>Result</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module">
-						<a href="_index_.totalsection.html" class="tsd-kind-icon">Total<wbr>Section</a>
+						<a href="_index_.searchparams.html" class="tsd-kind-icon">Search<wbr>Params</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_index_.totalsection.html#count" class="tsd-kind-icon">count</a>
+								<a href="_index_.searchparams.html#fields" class="tsd-kind-icon">fields</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_index_.totalsection.html#pages" class="tsd-kind-icon">pages</a>
+								<a href="_index_.searchparams.html#limit" class="tsd-kind-icon">limit</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_index_.searchparams.html#page" class="tsd-kind-icon">page</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_index_.searchparams.html#query" class="tsd-kind-icon">query</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_index_.searchparams.html#sort" class="tsd-kind-icon">sort</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="_index_.searchresult.html" class="tsd-kind-icon">Search<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="_index_.totalsection.html" class="tsd-kind-icon">Total<wbr>Section</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="_index_.updateparams.html" class="tsd-kind-icon">Update<wbr>Params</a>
 					</li>

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>backdey-resource-mongodb</title>
-	<meta name="description" content="Documentation for backdey-resource-mongodb">
+	<title>@quenk/dback-resource-mongodb</title>
+	<meta name="description" content="Documentation for @quenk/dback-resource-mongodb">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">backdey-resource-mongodb</a>
+					<a href="index.html" class="title">@quenk/dback-resource-mongodb</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1>backdey-resource-mongodb</h1>
+			<h1>@quenk/dback-resource-mongodb</h1>
 		</div>
 	</div>
 </header>
@@ -60,6 +60,47 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
+				<a href="#dback-resource-mongodb" id="dback-resource-mongodb" style="color: inherit; text-decoration: none;">
+					<h1>dback-resource-mongodb</h1>
+				</a>
+				<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+					<h2>Introduction</h2>
+				</a>
+				<p>This module provides a CSUGR API for controllers in <code>@quenk/tendril</code>
+				applications.</p>
+				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+					<h2>Installation</h2>
+				</a>
+				<pre><code class="language-sh">npm install --save-dev @quenk/dback-resource-mongodb</code></pre>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h2>Usage</h2>
+				</a>
+				<p>Extend the <code>BaseResource</code> class to create your own implementation:</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> {BaseController} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@quenk/dback-resource-mongodb&#x27;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">BaseResource</span> </span>{
+
+  <span class="hljs-function"><span class="hljs-title">before</span>(<span class="hljs-params">r:Request</span>)</span> {
+
+    <span class="hljs-built_in">this</span>.checkBody(r);
+    <span class="hljs-keyword">return</span> value(r);
+
+  }
+
+  <span class="hljs-function"><span class="hljs-title">create</span>(<span class="hljs-params">r:Request</span>)</span> {
+
+    <span class="hljs-keyword">if</span>(<span class="hljs-built_in">this</span>.isValid())
+     doCreate(r.body);   
+
+  }
+
+}
+</code></pre>
+				<p>NOTE: <code>BaseResource</code> does not validate the values sourced from the <code>Request</code>
+					object, it assumes they have been validated via middleware or filters or
+				will be validated in the <code>before*()</code> hooks.</p>
+				<p>It is therefore important to validate any data coming from the client before
+				passing it to this module.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -85,14 +126,12 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Resource | backdey-resource-mongodb</title>
-	<meta name="description" content="Documentation for backdey-resource-mongodb">
+	<title>Resource | @quenk/dback-resource-mongodb</title>
+	<meta name="description" content="Documentation for @quenk/dback-resource-mongodb">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">backdey-resource-mongodb</a>
+					<a href="../index.html" class="title">@quenk/dback-resource-mongodb</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -70,9 +70,12 @@
 					<div class="lead">
 						<p>Resource is the main interface of this module.</p>
 					</div>
-					<p>It provides a basic JSON enable CRUD interface for a collection in the
-						database. Extend BaseResource to benefit from the base implementation.
-					Additional methods can be added specific to your application&#39;s needs.</p>
+					<p>It provides a basic JSON based CSUGR interface for a target collection.
+						BaseResource provides a base implementation with hooks for additional
+					processing.</p>
+					<p>Warning: All data passed to this interface SHOULD BE PROPERLY VALIDATED!!
+						Otherwise users may be able to manipulate queries and have direct access
+					to the database.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-type-parameters">
@@ -102,130 +105,94 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.resource.html#create" class="tsd-kind-icon">create</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.resource.html#get" class="tsd-kind-icon">get</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.resource.html#remove" class="tsd-kind-icon">remove</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.resource.html#search" class="tsd-kind-icon">search</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_index_.resource.html#update" class="tsd-kind-icon">update</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_index_.resource.html#create" class="tsd-kind-icon">create</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_index_.resource.html#get" class="tsd-kind-icon">get</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_index_.resource.html#getmodel" class="tsd-kind-icon">get<wbr>Model</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_index_.resource.html#remove" class="tsd-kind-icon">remove</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_index_.resource.html#search" class="tsd-kind-icon">search</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_index_.resource.html#update" class="tsd-kind-icon">update</a></li>
 							</ul>
 						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="create" class="tsd-anchor"></a>
-					<h3>create</h3>
-					<div class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Filter</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in index.ts:181</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>create a new document in the Resource&#39;s collection.</p>
-						</div>
-						<p>The document data is fetched from the <a href="../enums/_index_.createkeys.html">CreateKeys</a> PRS keys.
-						A created response is sent with the id of the document once successful.</p>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="get" class="tsd-anchor"></a>
-					<h3>get</h3>
-					<div class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Filter</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in index.ts:210</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>get a single document in the Resource&#39;s collection.</p>
-						</div>
-						<p>The document&#39;s id is sourced from Request#params.id. A successful fetch
-							will respond with a Success with the document as body otherwise a
-						NotFound is sent.</p>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="remove" class="tsd-anchor"></a>
-					<h3>remove</h3>
-					<div class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Filter</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in index.ts:219</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>remove a single document in the Resource&#39;s collection.</p>
-						</div>
-						<p>The document&#39;s id is sourced from Request#params.id.a
-							A successful delete will respond with a Success or NotFound if the
-						document was not found.</p>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="search" class="tsd-anchor"></a>
-					<h3>search</h3>
-					<div class="tsd-signature tsd-kind-icon">search<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Filter</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in index.ts:190</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>search for a document in the Resource&#39;s collection.</p>
-						</div>
-						<p>The query parameters are built using the <a href="../enums/_index_.searchkeys.html">SearchKeys</a> PRS keys.
-							A successful result with found documents sends a <a href="_index_.searchresult.html">SearchResult</a>, if
-						there are no matches the NoContent response is sent.</p>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="update" class="tsd-anchor"></a>
-					<h3>update</h3>
-					<div class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Filter</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in index.ts:201</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>update a single document in the Resource&#39;s collection.</p>
-						</div>
-						<p>The document id is sourced from Request#params.id and the change data
-						from <a href="../enums/_index_.updatekeys.html">UpdateKeys</a>.</p>
-						<p>A successful update will result in an Success response whereas a
-						NotFound is sent if the update was not applied.</p>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="getmodel" class="tsd-anchor"></a>
-					<h3>get<wbr>Model</h3>
+					<a name="create" class="tsd-anchor"></a>
+					<h3>create</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Model<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in index.ts:173</li>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L219">index.ts:219</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>create a new document in the Resource&#39;s collection.</p>
+								</div>
+								<p>The document data is read from the request body.
+								A created response is sent with the id of the document if successful.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="get" class="tsd-anchor"></a>
+					<h3>get</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L251">index.ts:251</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>get a single document in the Resource&#39;s collection.</p>
+								</div>
+								<p>The document&#39;s id is sourced from Request#params.id.
+								Additional conditions can be specified via the <a href="../modules/_index_.html#key_get_params">KEY_GET_PARAMS</a> PRS key.</p>
+								<p>A successful fetch will respond with [[Ok]] with the document as body
+								otherwise [[NotFound]] is sent.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="getmodel" class="tsd-anchor"></a>
+					<h3>get<wbr>Model</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Model<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L211">index.ts:211</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -233,7 +200,104 @@
 									<p>getModel provides an instance of the Resource&#39;s main Model.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="remove" class="tsd-anchor"></a>
+					<h3>remove</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L263">index.ts:263</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>remove a single document in the Resource&#39;s collection.</p>
+								</div>
+								<p>The document&#39;s id is sourced from Request#params.id.a
+									Additional conditions can be specified via the <a href="../modules/_index_.html#key_remove_params">KEY_REMOVE_PARAMS</a> PRS
+								key.</p>
+								<p>A successful delete will respond with a [[Ok]] or [[NotFound]] if the
+								document was not found.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="search" class="tsd-anchor"></a>
+					<h3>search</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">search<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L228">index.ts:228</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>search for a document in the Resource&#39;s collection.</p>
+								</div>
+								<p>The query parameters are built using the <a href="../modules/_index_.html#key_search_params">KEY_SEARCH_PARAMS</a> PRS keys.
+									A successful result with found documents sends a <a href="_index_.searchresult.html">SearchResult</a>, if
+								there are no matches the [[NoContent]] response is sent.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="update" class="tsd-anchor"></a>
+					<h3>update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Request</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/backdey-resource-mongodb/blob/5283ce9/lib/index.ts#L240">index.ts:240</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>update a single document in the Resource&#39;s collection.</p>
+								</div>
+								<p>The document id is sourced from Request#params.id and the change data
+									from the request body. Additional conditions can be specified via the
+								<a href="../modules/_index_.html#key_update_params">KEY_UPDATE_PARAMS</a> PRS key.</p>
+								<p>A successful update will result in an [[Ok]] response whereas a
+								[[NotFound]] is sent if the update was not applied.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>r: <span class="tsd-signature-type">Request</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -252,59 +316,74 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/_index_.createkeys.html" class="tsd-kind-icon">Create<wbr>Keys</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/_index_.getkeys.html" class="tsd-kind-icon">Get<wbr>Keys</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/_index_.removekeys.html" class="tsd-kind-icon">Remove<wbr>Keys</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/_index_.searchkeys.html" class="tsd-kind-icon">Search<wbr>Keys</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/_index_.updatekeys.html" class="tsd-kind-icon">Update<wbr>Keys</a>
-					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="../classes/_index_.baseresource.html" class="tsd-kind-icon">Base<wbr>Resource</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="_index_.currentsection.html" class="tsd-kind-icon">Current<wbr>Section</a>
 					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="_index_.getparams.html" class="tsd-kind-icon">Get<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="_index_.removeparams.html" class="tsd-kind-icon">Remove<wbr>Params</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="_index_.resource.html" class="tsd-kind-icon">Resource</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_index_.resource.html#create" class="tsd-kind-icon">create</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_index_.resource.html#get" class="tsd-kind-icon">get</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_index_.resource.html#remove" class="tsd-kind-icon">remove</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_index_.resource.html#search" class="tsd-kind-icon">search</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_index_.resource.html#update" class="tsd-kind-icon">update</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_index_.resource.html#getmodel" class="tsd-kind-icon">get<wbr>Model</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_index_.resource.html#remove" class="tsd-kind-icon">remove</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_index_.resource.html#search" class="tsd-kind-icon">search</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_index_.resource.html#update" class="tsd-kind-icon">update</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="_index_.searchparams.html" class="tsd-kind-icon">Search<wbr>Params</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="_index_.searchresult.html" class="tsd-kind-icon">Search<wbr>Result</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="_index_.totalsection.html" class="tsd-kind-icon">Total<wbr>Section</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="_index_.updateparams.html" class="tsd-kind-icon">Update<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#err_no_query" class="tsd-kind-icon">ERR_<wbr>NO_<wbr>QUERY</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#err_payload_invalid" class="tsd-kind-icon">ERR_<wbr>PAYLOAD_<wbr>INVALID</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#key_get_params" class="tsd-kind-icon">KEY_<wbr>GET_<wbr>PARAMS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#key_remove_params" class="tsd-kind-icon">KEY_<wbr>REMOVE_<wbr>PARAMS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#key_search_params" class="tsd-kind-icon">KEY_<wbr>SEARCH_<wbr>PARAMS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="../modules/_index_.html#key_update_params" class="tsd-kind-icon">KEY_<wbr>UPDATE_<wbr>PARAMS</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="../modules/_index_.html#runcreate" class="tsd-kind-icon">run<wbr>Create</a>
@@ -333,14 +412,11 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
 				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
