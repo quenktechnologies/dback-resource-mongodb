@@ -3,7 +3,7 @@ import { Object } from '@quenk/noni/lib/data/jsonx';
 import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { flatten } from '@quenk/noni/lib/data/record/path';
 import { Action, doAction } from '@quenk/tendril/lib/app/api';
-import { Request, Filter } from '@quenk/tendril/lib/app/api/request';
+import { Request } from '@quenk/tendril/lib/app/api/request';
 import { fork, value, noop } from '@quenk/tendril/lib/app/api/control';
 import { ok, created, badRequest } from '@quenk/tendril/lib/app/api/response';
 import {
@@ -14,15 +14,6 @@ import { Id, Model } from '@quenk/dback-model-mongodb';
 
 const defaultSearchParams =
     { page: 1, limit: 1000 * 1000, query: {}, sort: {}, fields: {} };
-
-/**
- * HookResult is the result of applying one of the BaseResource hooks.
- *
- * If the result is an Action yielding no value, execution stops assuming
- * a response was sent to the client, if the Action yields a Request, execution
- * will continue after the hook.
- */
-export type HookResult = Action<void> | Action<Request>;
 
 export const KEY_SEARCH_PARAMS = 'resource.mongodb.search.params';
 export const KEY_UPDATE_PARAMS = 'resource.mongodb.update.params';
@@ -214,7 +205,7 @@ export interface Resource<T extends Object> {
      * The document data is read from the request body.
      * A created response is sent with the id of the document if successful.
      */
-    create: Filter<void>
+    create(r: Request): Action<void>
 
     /**
      * search for a document in the Resource's collection.
@@ -223,7 +214,7 @@ export interface Resource<T extends Object> {
      * A successful result with found documents sends a [[SearchResult]], if
      * there are no matches the [[NoContent]] response is sent.
      */
-    search: Filter<void>
+    search(r: Request): Action<void>
 
     /**
      * update a single document in the Resource's collection.
@@ -235,7 +226,7 @@ export interface Resource<T extends Object> {
      * A successful update will result in an [[Ok]] response whereas a
      * [[NotFound]] is sent if the update was not applied.
      */
-    update: Filter<void>
+    update(r: Request): Action<void>
 
     /**
      * get a single document in the Resource's collection.
@@ -246,7 +237,7 @@ export interface Resource<T extends Object> {
      * A successful fetch will respond with [[Ok]] with the document as body 
      * otherwise [[NotFound]] is sent.
      */
-    get: Filter<void>
+    get(r: Request): Action<void>
 
     /**
      * remove a single document in the Resource's collection.
@@ -258,7 +249,7 @@ export interface Resource<T extends Object> {
      * A successful delete will respond with a [[Ok]] or [[NotFound]] if the
      * document was not found.
      */
-    remove: Filter<void>
+    remove(r: Request): Action<void>
 
 }
 
@@ -295,7 +286,7 @@ export abstract class BaseResource<T extends Object>
      *
      * It can be overriden to execute other middleware.
      */
-    before(r: Request): HookResult {
+    before(r: Request): Action<Request> {
 
         return value(r);
 
@@ -304,7 +295,7 @@ export abstract class BaseResource<T extends Object>
     /**
      * beforeCreate is executed before create().
      */
-    beforeCreate(r: Request): HookResult {
+    beforeCreate(r: Request): Action<Request> {
 
         return value(r);
 
@@ -313,7 +304,7 @@ export abstract class BaseResource<T extends Object>
     /**
      * beforeSearch is executed before search().
      */
-    beforeSearch(r: Request): HookResult {
+    beforeSearch(r: Request): Action<Request> {
 
         return value(r);
 
@@ -322,7 +313,7 @@ export abstract class BaseResource<T extends Object>
     /**
      * beforeUpdate is executed before update().
      */
-    beforeUpdate(r: Request): HookResult {
+    beforeUpdate(r: Request): Action<Request> {
 
         return value(r);
 
@@ -331,7 +322,7 @@ export abstract class BaseResource<T extends Object>
     /**
      * beforeGet is executed before get().
      */
-    beforeGet(r: Request): HookResult {
+    beforeGet(r: Request): Action<Request> {
 
         return value(r);
 
@@ -340,13 +331,13 @@ export abstract class BaseResource<T extends Object>
     /**
      * beforeRemove is executed before remove().
      */
-    beforeRemove(r: Request): HookResult {
+    beforeRemove(r: Request): Action<Request> {
 
         return value(r);
 
     }
 
-    create = (r: Request): Action<void> => {
+    create(r: Request): Action<void> {
 
         let that = this;
 
@@ -370,7 +361,7 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    search = (r: Request): Action<void> => {
+    search(r: Request): Action<void> {
 
         let that = this;
 
@@ -408,7 +399,7 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    update = (r: Request): Action<void> => {
+    update(r: Request): Action<void> {
 
         let that = this;
 
@@ -418,7 +409,7 @@ export abstract class BaseResource<T extends Object>
 
             if (that.isAborted) return noop();
 
-            r = yield that.beforeSearch(r);
+            r = yield that.beforeUpdate(r);
 
             if (that.isAborted) return noop();
 
@@ -441,7 +432,7 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    get = (r: Request): Action<void> => {
+    get(r: Request): Action<void> {
 
         let that = this;
 
@@ -474,7 +465,7 @@ export abstract class BaseResource<T extends Object>
 
     }
 
-    remove = (r: Request): Action<void> => {
+    remove(r: Request): Action<void> {
 
         let that = this;
 
@@ -581,9 +572,9 @@ export const runSearch = <T extends Object>
 
                     total: {
 
-                        count: pageCount,
+                        count: n,
 
-                        pages: n
+                        pages: pageCount
 
                     }
 
@@ -647,7 +638,7 @@ export const runGet =
             let maybeData =
                 yield fork(model.get(id, query, { projection }));
 
-            return value(maybeData);
+            return value(maybeData.map((data: T) => ({ data })));
 
         });
 

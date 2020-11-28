@@ -1,16 +1,8 @@
 import { Object } from '@quenk/noni/lib/data/jsonx';
 import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { Action } from '@quenk/tendril/lib/app/api';
-import { Request, Filter } from '@quenk/tendril/lib/app/api/request';
+import { Request } from '@quenk/tendril/lib/app/api/request';
 import { Id, Model } from '@quenk/dback-model-mongodb';
-/**
- * HookResult is the result of applying one of the BaseResource hooks.
- *
- * If the result is an Action yielding no value, execution stops assuming
- * a response was sent to the client, if the Action yields a Request, execution
- * will continue after the hook.
- */
-export declare type HookResult = Action<void> | Action<Request>;
 export declare const KEY_SEARCH_PARAMS = "resource.mongodb.search.params";
 export declare const KEY_UPDATE_PARAMS = "resource.mongodb.update.params";
 export declare const KEY_GET_PARAMS = "resource.mongodb.search.params";
@@ -162,7 +154,7 @@ export interface Resource<T extends Object> {
      * The document data is read from the request body.
      * A created response is sent with the id of the document if successful.
      */
-    create: Filter<void>;
+    create(r: Request): Action<void>;
     /**
      * search for a document in the Resource's collection.
      *
@@ -170,7 +162,7 @@ export interface Resource<T extends Object> {
      * A successful result with found documents sends a [[SearchResult]], if
      * there are no matches the [[NoContent]] response is sent.
      */
-    search: Filter<void>;
+    search(r: Request): Action<void>;
     /**
      * update a single document in the Resource's collection.
      *
@@ -181,7 +173,7 @@ export interface Resource<T extends Object> {
      * A successful update will result in an [[Ok]] response whereas a
      * [[NotFound]] is sent if the update was not applied.
      */
-    update: Filter<void>;
+    update(r: Request): Action<void>;
     /**
      * get a single document in the Resource's collection.
      *
@@ -191,7 +183,7 @@ export interface Resource<T extends Object> {
      * A successful fetch will respond with [[Ok]] with the document as body
      * otherwise [[NotFound]] is sent.
      */
-    get: Filter<void>;
+    get(r: Request): Action<void>;
     /**
      * remove a single document in the Resource's collection.
      *
@@ -202,7 +194,7 @@ export interface Resource<T extends Object> {
      * A successful delete will respond with a [[Ok]] or [[NotFound]] if the
      * document was not found.
      */
-    remove: Filter<void>;
+    remove(r: Request): Action<void>;
 }
 /**
  * BaseResource provides the default Resource implementation.
@@ -228,32 +220,32 @@ export declare abstract class BaseResource<T extends Object> implements Resource
      *
      * It can be overriden to execute other middleware.
      */
-    before(r: Request): HookResult;
+    before(r: Request): Action<Request>;
     /**
      * beforeCreate is executed before create().
      */
-    beforeCreate(r: Request): HookResult;
+    beforeCreate(r: Request): Action<Request>;
     /**
      * beforeSearch is executed before search().
      */
-    beforeSearch(r: Request): HookResult;
+    beforeSearch(r: Request): Action<Request>;
     /**
      * beforeUpdate is executed before update().
      */
-    beforeUpdate(r: Request): HookResult;
+    beforeUpdate(r: Request): Action<Request>;
     /**
      * beforeGet is executed before get().
      */
-    beforeGet(r: Request): HookResult;
+    beforeGet(r: Request): Action<Request>;
     /**
      * beforeRemove is executed before remove().
      */
-    beforeRemove(r: Request): HookResult;
-    create: (r: Request) => Action<void>;
-    search: (r: Request) => Action<void>;
-    update: (r: Request) => Action<void>;
-    get: (r: Request) => Action<void>;
-    remove: (r: Request) => Action<void>;
+    beforeRemove(r: Request): Action<Request>;
+    create(r: Request): Action<void>;
+    search(r: Request): Action<void>;
+    update(r: Request): Action<void>;
+    get(r: Request): Action<void>;
+    remove(r: Request): Action<void>;
 }
 /**
  * runCreate creates a new document in the provided Model's collection.
