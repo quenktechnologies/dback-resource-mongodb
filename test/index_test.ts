@@ -1,6 +1,3 @@
-import * as http from 'http';
-import * as express from 'express';
-
 import { assert } from '@quenk/test/lib/assert';
 import { Mock } from '@quenk/test/lib/mock';
 

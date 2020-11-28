@@ -1,9 +1,9 @@
 # dback-resource-mongodb
 
-## About
+## Introduction
 
-This module provides tendril compatiable classes and types for creating basic
-endpoints for CRUD operations.
+This module provides a CSUGR API for controllers in `@quenk/tendril` 
+applications.
 
 ## Installation
 
@@ -13,17 +13,34 @@ npm install --save-dev @quenk/dback-resource-mongodb
 
 ## Usage
 
-Use of this module usually begins by extending the `BaseResource` class:
+Extend the `BaseResource` class to create your own implementation:
 
 ```typescript
 import {BaseController} from '@quenk/dback-resource-mongodb';
 
-export class MyController extends BaseResource {}
+export class MyController extends BaseResource {
+
+  before(r:Request) {
+
+    this.checkBody(r);
+    return value(r);
+
+  }
+
+  create(r:Request) {
+
+    if(this.isValid())
+     doCreate(r.body);   
+
+  }
+
+}
 
 ```
 
-`MyController` now has simple create,search,update,get,remove methods.
+NOTE: `BaseResource` does not validate the values sourced from the `Request`
+object, it assumes they have been validated via middleware or filters or 
+will be validated in the `before*()` hooks.
 
-NOTE: The methods above simply make the appropriate database calls an make NO
-attempt to validate the data provided. The `before*()` hooks should be used 
-to ensure data sent to the database is set and meets the right requirements.
+It is therefore important to validate any data coming from the client before
+passing it to this module.
