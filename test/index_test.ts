@@ -292,6 +292,38 @@ describe('resource', () => {
                     return pure(undefined);
 
                 })));
+
+            it('should fail if the request body is not an object', () =>
+                toPromise(doFuture<undefined>(function*() {
+
+                    let ctx = getContext({});
+                    let ctl = new TestResource(new MockModel());
+
+                    ctl.model.MOCK.setReturnValue('create', pure(1));
+
+                    let action = ctl.create(<Type>{});
+
+                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+
+                    yield attempt(() => {
+
+                        assert(
+                            ctx.response.MOCK.wasCalledWithDeep('status', [409])
+                        ).true();
+
+                        assert(ctl.MOCK.wasCalled('before')).false();
+                        assert(ctl.MOCK.wasCalled('beforeCreate')).false();
+                        assert(ctl
+                            .model
+                            .MOCK
+                            .wasCalled('create')).false();
+
+                    });
+
+                    return pure(undefined);
+
+                })));
+
         });
 
         describe('search', () => {
@@ -439,6 +471,35 @@ describe('resource', () => {
 
                 })))
 
+            it('should fail if no query set in prs', () =>
+                toPromise(doFuture<undefined>(function*() {
+
+                    let ctx = getContext({});
+                    let ctl = new TestResource(new MockModel());
+
+                    ctx.request.prs.MOCK.setReturnValue('get', nothing());
+
+                    ctl.model.MOCK.setReturnValue('count', pure(8));
+                    ctl.model.MOCK.setReturnValue('search', pure([{}, {}]));
+
+                    let action = ctl.search(ctx.request);
+
+                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+
+                    yield attempt(() => {
+
+                        assert(
+                            ctx.response.MOCK.wasCalledWithDeep('status', [400])
+                        ).true();
+
+                        assert(ctl.MOCK.wasCalled('before')).false();
+                        assert(ctl.MOCK.wasCalled('beforeSearch')).false();
+
+                    });
+
+                    return pure(undefined);
+
+                })))
         })
 
         describe('update', () => {
@@ -576,6 +637,66 @@ describe('resource', () => {
                     return pure(undefined);
 
                 })))
+
+            it('should fail if the request body is not an object', () =>
+                toPromise(doFuture<undefined>(function*() {
+
+                    let ctx = getContext({});
+                    let ctl = new TestResource(new MockModel());
+
+                    ctl.model.MOCK.setReturnValue('update', pure(true));
+
+                    let action = ctl.update(<Type>{});
+
+                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+
+                    yield attempt(() => {
+
+                        assert(
+                            ctx.response.MOCK.wasCalledWithDeep('status', [409])
+                        ).true();
+
+                        assert(ctl.MOCK.wasCalled('before')).false();
+                        assert(ctl.MOCK.wasCalled('beforeUpdate')).false();
+                        assert(ctl
+                            .model
+                            .MOCK
+                            .wasCalled('update')).false();
+
+                    });
+
+                    return pure(undefined);
+
+                })));
+
+            it('should not throw if params.id is missing', () =>
+                toPromise(doFuture<undefined>(function*() {
+
+                    let req = { params: {}, body: { id: 2 } };
+                    let ctx = getContext(req);
+                    let ctl = new TestResource(new MockModel());
+                    let action = ctl.update(ctx.request);
+
+                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+
+                    yield attempt(() => {
+
+                        assert(
+                            ctx.response.MOCK.wasCalledWith('status', [404])
+                        ).true();
+
+                        assert(
+                            ctl
+                                .model
+                                .MOCK
+                                .wasCalled('update')).false();
+
+                    });
+
+                    return pure(undefined);
+
+                })))
+
         })
 
         describe('get', () => {
@@ -725,6 +846,35 @@ describe('resource', () => {
                     return pure(undefined);
 
                 })))
+
+            it('should not throw if params.id is missing', () =>
+                toPromise(doFuture<undefined>(function*() {
+
+                    let req = { params: {}, body: { id: 2 } };
+                    let ctx = getContext(req);
+                    let ctl = new TestResource(new MockModel());
+                    let action = ctl.get(ctx.request);
+
+                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+
+                    yield attempt(() => {
+
+                        assert(
+                            ctx.response.MOCK.wasCalledWith('status', [404])
+                        ).true();
+
+                        assert(
+                            ctl
+                                .model
+                                .MOCK
+                                .wasCalled('get')).false();
+
+                    });
+
+                    return pure(undefined);
+
+                })))
+
         })
 
         describe('remove', () => {
@@ -850,6 +1000,34 @@ describe('resource', () => {
                                     {}
                                 ])
                         ).true();
+
+                    });
+
+                    return pure(undefined);
+
+                })))
+
+            it('should not throw if params.id is missing', () =>
+                toPromise(doFuture<undefined>(function*() {
+
+                    let req = { params: {} };
+                    let ctx = getContext(req);
+                    let ctl = new TestResource(new MockModel());
+                    let action = ctl.get(ctx.request);
+
+                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+
+                    yield attempt(() => {
+
+                        assert(
+                            ctx.response.MOCK.wasCalledWith('status', [404])
+                        ).true();
+
+                        assert(
+                            ctl
+                                .model
+                                .MOCK
+                                .wasCalled('remove')).false();
 
                     });
 

@@ -7,6 +7,8 @@ export declare const KEY_SEARCH_PARAMS = "resource.mongodb.search.params";
 export declare const KEY_UPDATE_PARAMS = "resource.mongodb.update.params";
 export declare const KEY_GET_PARAMS = "resource.mongodb.search.params";
 export declare const KEY_REMOVE_PARAMS = "resource.mongodb.remove.params";
+export declare const ERR_PAYLOAD_INVALID = "payload invalid";
+export declare const ERR_NO_QUERY = "no query parameters detected";
 /**
  * SearchParams used in search query execution.
  */

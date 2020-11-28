@@ -2,14 +2,22 @@ import { merge, empty } from '@quenk/noni/lib/data/record';
 import { Object } from '@quenk/noni/lib/data/jsonx';
 import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { flatten } from '@quenk/noni/lib/data/record/path';
+import { isObject } from '@quenk/noni/lib/data/type';
+
 import { Action, doAction } from '@quenk/tendril/lib/app/api';
 import { Request } from '@quenk/tendril/lib/app/api/request';
 import { fork, value, noop } from '@quenk/tendril/lib/app/api/control';
-import { ok, created, badRequest } from '@quenk/tendril/lib/app/api/response';
+import {
+    ok,
+    created,
+    badRequest,
+    conflict
+} from '@quenk/tendril/lib/app/api/response';
 import {
     noContent,
     notFound
 } from '@quenk/tendril/lib/app/api/response';
+
 import { Id, Model } from '@quenk/dback-model-mongodb';
 
 const defaultSearchParams =
@@ -19,6 +27,9 @@ export const KEY_SEARCH_PARAMS = 'resource.mongodb.search.params';
 export const KEY_UPDATE_PARAMS = 'resource.mongodb.update.params';
 export const KEY_GET_PARAMS = 'resource.mongodb.search.params';
 export const KEY_REMOVE_PARAMS = 'resource.mongodb.remove.params';
+
+export const ERR_PAYLOAD_INVALID = 'payload invalid';
+export const ERR_NO_QUERY = 'no query parameters detected';
 
 /**
  * SearchParams used in search query execution.
@@ -343,6 +354,9 @@ export abstract class BaseResource<T extends Object>
 
         return doAction<void>(function*() {
 
+            if (!isObject(r.body))
+                return conflict({ error: ERR_PAYLOAD_INVALID });
+
             r = yield that.before(r);
 
             if (that.isAborted) return noop();
@@ -367,6 +381,13 @@ export abstract class BaseResource<T extends Object>
 
         return doAction(function*() {
 
+            let mparams = r.prs.get(KEY_SEARCH_PARAMS);
+
+            if (mparams.isNothing())
+                return badRequest({ error: ERR_NO_QUERY });
+
+            let params = <SearchParams><object>mparams.get();
+
             r = yield that.before(r);
 
             if (that.isAborted) return noop();
@@ -377,23 +398,12 @@ export abstract class BaseResource<T extends Object>
 
             let model = that.getModel();
 
-            let mparams = r.prs.get(KEY_SEARCH_PARAMS);
+            let result = yield runSearch(model, params);
 
-            if (mparams.isJust()) {
-
-                let result = yield runSearch(model,
-                    <SearchParams><object>mparams.get());
-
-                if (result.data.length > 0)
-                    return ok(result);
-                else
-                    return noContent();
-
-            } else {
-
-                return badRequest();
-
-            }
+            if (result.data.length > 0)
+                return ok(result);
+            else
+                return noContent();
 
         });
 
@@ -405,6 +415,12 @@ export abstract class BaseResource<T extends Object>
 
         return doAction(function*() {
 
+            if (!isObject(r.body))
+                return conflict({ error: ERR_PAYLOAD_INVALID });
+
+            if (!r.params.id)
+                return notFound();
+
             r = yield that.before(r);
 
             if (that.isAborted) return noop();
@@ -413,7 +429,7 @@ export abstract class BaseResource<T extends Object>
 
             if (that.isAborted) return noop();
 
-            let params = r.prs.getOrElse(
+            let extraParams = r.prs.getOrElse(
                 KEY_UPDATE_PARAMS,
                 { query: {}, changes: {} }
             );
@@ -424,7 +440,7 @@ export abstract class BaseResource<T extends Object>
                 model,
                 <Id>r.params.id,
                 <Object>r.body,
-                <UpdateParams><object>params);
+                <UpdateParams><object>extraParams);
 
             return yes ? ok() : notFound();
 
@@ -437,6 +453,9 @@ export abstract class BaseResource<T extends Object>
         let that = this;
 
         return doAction(function*() {
+
+            if (!r.params.id)
+                return notFound();
 
             r = yield that.before(r);
 
@@ -470,6 +489,9 @@ export abstract class BaseResource<T extends Object>
         let that = this;
 
         return doAction(function*() {
+
+            if (!r.params.id)
+                return notFound();
 
             r = yield that.before(r);
 
