@@ -6,7 +6,7 @@ import { isObject } from '@quenk/noni/lib/data/type';
 
 import { Action, doAction } from '@quenk/tendril/lib/app/api';
 import { Request } from '@quenk/tendril/lib/app/api/request';
-import { fork, value, noop } from '@quenk/tendril/lib/app/api/control';
+import { fork, value } from '@quenk/tendril/lib/app/api/control';
 import {
     ok,
     created,
@@ -276,21 +276,6 @@ export abstract class BaseResource<T extends Object>
 
     abstract getModel(): Model<T>
 
-    isAborted = false;
-
-    /**
-     * abort can be called in a before*() handler to signal that the
-     * operation has been cancelled and should proceed no further.
-     *
-     * Logic calling this method should ensure that an appropriate response
-     * is sent to the user.
-     */
-    abort() {
-
-        this.isAborted = true;
-
-    }
-
     /**
      * before is a filter that is executed before each of the CSUGR
      * methods.
@@ -359,11 +344,7 @@ export abstract class BaseResource<T extends Object>
 
             r = yield that.before(r);
 
-            if (that.isAborted) return noop();
-
             r = yield that.beforeCreate(r);
-
-            if (that.isAborted) return noop();
 
             let model = that.getModel();
 
@@ -390,11 +371,7 @@ export abstract class BaseResource<T extends Object>
 
             r = yield that.before(r);
 
-            if (that.isAborted) return noop();
-
             r = yield that.beforeSearch(r);
-
-            if (that.isAborted) return noop();
 
             let model = that.getModel();
 
@@ -423,11 +400,7 @@ export abstract class BaseResource<T extends Object>
 
             r = yield that.before(r);
 
-            if (that.isAborted) return noop();
-
             r = yield that.beforeUpdate(r);
-
-            if (that.isAborted) return noop();
 
             let extraParams = r.prs.getOrElse(
                 KEY_UPDATE_PARAMS,
@@ -459,11 +432,7 @@ export abstract class BaseResource<T extends Object>
 
             r = yield that.before(r);
 
-            if (that.isAborted) return noop();
-
             r = yield that.beforeGet(r);
-
-            if (that.isAborted) return noop();
 
             let params = r.prs.getOrElse(KEY_GET_PARAMS, {
 
@@ -495,11 +464,7 @@ export abstract class BaseResource<T extends Object>
 
             r = yield that.before(r);
 
-            if (that.isAborted) return noop();
-
             r = yield that.beforeRemove(r);
-
-            if (that.isAborted) return noop();
 
             let params = r.prs.getOrElse(KEY_REMOVE_PARAMS, {
                 query: {},
