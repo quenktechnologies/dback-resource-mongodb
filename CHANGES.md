@@ -1,5 +1,10 @@
 # Tendril Changelog
 
+## [1.2.2] - 2020-11-29
+### Changed
+ - You now need to specify a connection id to `BaseResource`. It will take care
+   of checking the db connection out of the pool.
+
 ## [1.2.1] - 2020-11-28
 
 ### Removed

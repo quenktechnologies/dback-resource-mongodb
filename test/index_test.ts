@@ -184,7 +184,28 @@ class TestResource extends BaseResource<Object> {
 
 const getContext = (req: object): Type => ({
 
-    module: {},
+    module: {
+
+        system: {
+
+            pool: {
+
+                MOCK: new Mock(),
+
+                get(id: string) {
+
+                    return this.MOCK.invoke('get', [id], just({
+
+                        checkout() {
+
+                            return pure({});
+                        }
+
+                    }));
+                }
+            }
+        }
+    },
 
     request: merge({
 

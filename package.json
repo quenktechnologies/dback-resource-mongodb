@@ -7,7 +7,7 @@
         "lib"
     ],
     "scripts": {
-        "test": "./node_modules/.bin/mocha $(find test *_test.ts)"
+        "test": "./node_modules/.bin/mocha $(find test -name *_test.ts)"
     },
     "author": "Lasana Murray <info@quenk.com> (http://quenk.com)",
     "license": "Apache-2.0",

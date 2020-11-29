@@ -1,3 +1,4 @@
+import * as mongo from 'mongodb';
 import { Object } from '@quenk/noni/lib/data/jsonx';
 import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { Action } from '@quenk/tendril/lib/app/api';
@@ -145,11 +146,7 @@ export interface SearchResult<T extends Object> {
  * Otherwise users may be able to manipulate queries and have direct access
  * to the database.
  */
-export interface Resource<T extends Object> {
-    /**
-     * getModel provides an instance of the Resource's main Model.
-     */
-    getModel(): Model<T>;
+export interface Resource {
     /**
      * create a new document in the Resource's collection.
      *
@@ -204,9 +201,17 @@ export interface Resource<T extends Object> {
  * Warning: All data passed to this class MUST BE PROPERLY VALIDATED!!
  * Otherwise users may be able to manipulate queries and have direct access
  * to the database.
+ *
+ * @param conn - This is the id of the pooled mongodb connection that will be
+ *               checked out before each operation.
  */
-export declare abstract class BaseResource<T extends Object> implements Resource<T> {
-    abstract getModel(): Model<T>;
+export declare abstract class BaseResource<T extends Object> implements Resource {
+    conn: string;
+    constructor(conn?: string);
+    /**
+     * getModel provides an instance of the Resource's main Model.
+     */
+    abstract getModel(db: mongo.Db): Model<T>;
     /**
      * before is a filter that is executed before each of the CSUGR
      * methods.

@@ -1,3 +1,5 @@
+import * as mongo from 'mongodb';
+
 import { merge, empty } from '@quenk/noni/lib/data/record';
 import { Object } from '@quenk/noni/lib/data/jsonx';
 import { Maybe } from '@quenk/noni/lib/data/maybe';
@@ -7,6 +9,7 @@ import { isObject } from '@quenk/noni/lib/data/type';
 import { Action, doAction } from '@quenk/tendril/lib/app/api';
 import { Request } from '@quenk/tendril/lib/app/api/request';
 import { fork, value } from '@quenk/tendril/lib/app/api/control';
+import { checkout } from '@quenk/tendril/lib/app/api/pool';
 import {
     ok,
     created,
@@ -203,12 +206,7 @@ export interface SearchResult<T extends Object> {
  * Otherwise users may be able to manipulate queries and have direct access
  * to the database.
  */
-export interface Resource<T extends Object> {
-
-    /**
-     * getModel provides an instance of the Resource's main Model.
-     */
-    getModel(): Model<T>
+export interface Resource {
 
     /**
      * create a new document in the Resource's collection.
@@ -270,11 +268,19 @@ export interface Resource<T extends Object> {
  * Warning: All data passed to this class MUST BE PROPERLY VALIDATED!!
  * Otherwise users may be able to manipulate queries and have direct access
  * to the database.
+ *
+ * @param conn - This is the id of the pooled mongodb connection that will be
+ *               checked out before each operation.
  */
 export abstract class BaseResource<T extends Object>
-    implements Resource<T> {
+    implements Resource {
 
-    abstract getModel(): Model<T>
+    constructor(public conn: string = 'main') { }
+
+    /**
+     * getModel provides an instance of the Resource's main Model.
+     */
+    abstract getModel(db: mongo.Db): Model<T>
 
     /**
      * before is a filter that is executed before each of the CSUGR
@@ -346,7 +352,9 @@ export abstract class BaseResource<T extends Object>
 
             r = yield that.beforeCreate(r);
 
-            let model = that.getModel();
+            let db = yield checkout(that.conn);
+
+            let model = that.getModel(db);
 
             let id = yield runCreate<T>(model, <T><Object>r.body);
 
@@ -373,7 +381,9 @@ export abstract class BaseResource<T extends Object>
 
             r = yield that.beforeSearch(r);
 
-            let model = that.getModel();
+            let db = yield checkout(that.conn);
+
+            let model = that.getModel(db);
 
             let result = yield runSearch(model, params);
 
@@ -407,7 +417,9 @@ export abstract class BaseResource<T extends Object>
                 { query: {}, changes: {} }
             );
 
-            let model = that.getModel();
+            let db = yield checkout(that.conn);
+
+            let model = that.getModel(db);
 
             let yes = yield runUpdate(
                 model,
@@ -442,7 +454,9 @@ export abstract class BaseResource<T extends Object>
 
             });
 
-            let model = that.getModel();
+            let db = yield checkout(that.conn);
+
+            let model = that.getModel(db);
 
             let mdoc = yield runGet(model, <Id>r.params.id,
                 <GetParams><object>params);
@@ -470,7 +484,9 @@ export abstract class BaseResource<T extends Object>
                 query: {},
             });
 
-            let model = that.getModel();
+            let db = yield checkout(that.conn);
+
+            let model = that.getModel(db);
 
             let yes = yield runRemove(model, <Id>r.params.id,
                 <RemoveParams><object>params);
