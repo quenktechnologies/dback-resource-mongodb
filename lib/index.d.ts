@@ -4,6 +4,7 @@ import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { Action } from '@quenk/tendril/lib/app/api';
 import { Request } from '@quenk/tendril/lib/app/api/request';
 import { Id, Model } from '@quenk/dback-model-mongodb';
+export declare const KEY_CREATE_ID = "resource.mongodb.create.id";
 export declare const KEY_SEARCH_PARAMS = "resource.mongodb.search.params";
 export declare const KEY_UPDATE_PARAMS = "resource.mongodb.update.params";
 export declare const KEY_GET_PARAMS = "resource.mongodb.search.params";
@@ -244,6 +245,33 @@ export declare abstract class BaseResource<T extends Object> implements Resource
     update(r: Request): Action<void>;
     get(r: Request): Action<void>;
     remove(r: Request): Action<void>;
+    /**
+     * after is a filter that is executed after each of the CSUGR
+     * methods have responded to the client.
+     *
+     * It can be overriden to execute other middleware.
+     */
+    after(_: Request): Action<void>;
+    /**
+     * afterCreate is executed after [[create]] sends a response..
+     */
+    afterCreate(_: Request): Action<void>;
+    /**
+     * afterSearch is executed after [[search]] sends a response.
+     */
+    afterSearch(_: Request): Action<void>;
+    /**
+     * afterUpdate is executed after [[update]] sends a response.
+     */
+    afterUpdate(_: Request): Action<void>;
+    /**
+     * afterGet is executed after [[get]] sends a response.
+     */
+    afterGet(_: Request): Action<void>;
+    /**
+     * afterRemove is executed after [[remove]] sends a response.
+     */
+    afterRemove(_: Request): Action<void>;
 }
 /**
  * runCreate creates a new document in the provided Model's collection.

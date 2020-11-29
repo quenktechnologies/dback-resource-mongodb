@@ -1,6 +1,13 @@
 # Tendril Changelog
 
+## [1.3.0] - 2020-11-29
+
+### Added
+  - `after*()` hooks.
+  - `create()` now sets the id in the prs key `KEY_CREATE_ID`.
+
 ## [1.2.2] - 2020-11-29
+
 ### Changed
  - You now need to specify a connection id to `BaseResource`. It will take care
    of checking the db connection out of the pool.

@@ -17,7 +17,7 @@ import { JoinRef, Id } from '@quenk/dback-model-mongodb';
 
 import { Request } from '@quenk/tendril/lib/app/api/request';
 import { ok } from '@quenk/tendril/lib/app/api/response';
-import { value } from '@quenk/tendril/lib/app/api/control';
+import { value, noop } from '@quenk/tendril/lib/app/api/control';
 import { Context, doAction } from '@quenk/tendril/lib/app/api';
 
 import { BaseResource } from '../src';
@@ -180,6 +180,42 @@ class TestResource extends BaseResource<Object> {
 
     }
 
+    after(r: Request) {
+
+        return this.MOCK.invoke('after', [r], noop());
+
+    }
+
+    afterCreate(r: Request) {
+
+        return this.MOCK.invoke('afterCreate', [r], noop());
+
+    }
+
+    afterSearch(r: Request) {
+
+        return this.MOCK.invoke('afterSearch', [r], noop());
+
+    }
+
+    afterUpdate(r: Request) {
+
+        return this.MOCK.invoke('afterUpdate', [r], noop());
+
+    }
+
+    afterGet(r: Request) {
+
+        return this.MOCK.invoke('afterGet', [r], noop());
+
+    }
+
+    afterRemove(r: Request) {
+
+        return this.MOCK.invoke('afterRemove', [r], noop());
+
+    }
+
 }
 
 const getContext = (req: object): Type => ({
@@ -216,6 +252,12 @@ const getContext = (req: object): Type => ({
             get(key: string) {
 
                 return this.MOCK.invoke('get', [key], nothing());
+
+            },
+
+            set(key: string, value: Type) {
+
+                return this.MOCK.invoke('set', [key, value], this);
 
             },
 
@@ -268,14 +310,13 @@ describe('resource', () => {
             it('should create new records', () =>
                 toPromise(doFuture<undefined>(function*() {
 
-                    let req = <Type>{ body: { name: 'Chippy' } };
+                    let ctx = getContext({ body: { name: 'Chippy' } });
 
-                    let ctx = getContext(req);
                     let ctl = new TestResource(new MockModel());
 
                     ctl.model.MOCK.setReturnValue('create', pure(1));
 
-                    let action = ctl.create(req);
+                    let action = ctl.create(ctx.request);
 
                     yield action.foldM(() => pure(undefined), n => n.exec(ctx));
 
@@ -292,17 +333,26 @@ describe('resource', () => {
                                 .wasCalledWithDeep('send', [{ id: 1 }])
                         ).true();
 
+                        assert(
+                            ctx
+                                .request
+                                .prs
+                                .MOCK
+                                .wasCalled('set')).true();
+
                         assert(ctl.MOCK.getCalledList()).equate([
                             'create',
                             'before',
                             'beforeCreate',
+                            'after',
+                            'afterCreate'
                         ]);
 
                         assert(
                             ctl
                                 .model
                                 .MOCK
-                                .wasCalledWithDeep('create', [req.body])
+                                .wasCalledWithDeep('create', [ctx.request.body])
                         ).true();
 
                     });
@@ -545,6 +595,9 @@ describe('resource', () => {
                             'update',
                             'before',
                             'beforeUpdate',
+                            'after',
+                            'afterUpdate'
+
                         ]);
 
                         assert(
@@ -742,6 +795,8 @@ describe('resource', () => {
                             'get',
                             'before',
                             'beforeGet',
+                            'after',
+                            'afterGet'
                         ]);
 
                         assert(
@@ -920,6 +975,8 @@ describe('resource', () => {
                             'remove',
                             'before',
                             'beforeRemove',
+                            'after',
+                            'afterRemove'
                         ]);
 
                         assert(

@@ -8,7 +8,7 @@ import { isObject } from '@quenk/noni/lib/data/type';
 
 import { Action, doAction } from '@quenk/tendril/lib/app/api';
 import { Request } from '@quenk/tendril/lib/app/api/request';
-import { fork, value } from '@quenk/tendril/lib/app/api/control';
+import { fork, value, noop } from '@quenk/tendril/lib/app/api/control';
 import { checkout } from '@quenk/tendril/lib/app/api/pool';
 import {
     ok,
@@ -26,6 +26,7 @@ import { Id, Model } from '@quenk/dback-model-mongodb';
 const defaultSearchParams =
     { page: 1, limit: 1000 * 1000, query: {}, sort: {}, fields: {} };
 
+export const KEY_CREATE_ID = 'resource.mongodb.create.id';
 export const KEY_SEARCH_PARAMS = 'resource.mongodb.search.params';
 export const KEY_UPDATE_PARAMS = 'resource.mongodb.update.params';
 export const KEY_GET_PARAMS = 'resource.mongodb.search.params';
@@ -358,7 +359,13 @@ export abstract class BaseResource<T extends Object>
 
             let id = yield runCreate<T>(model, <T><Object>r.body);
 
-            return created({ id });
+            r.prs.set(KEY_CREATE_ID, id);
+
+            yield created({ id });
+
+            yield that.after(r);
+
+            return that.afterCreate(r);
 
         });
 
@@ -387,10 +394,11 @@ export abstract class BaseResource<T extends Object>
 
             let result = yield runSearch(model, params);
 
-            if (result.data.length > 0)
-                return ok(result);
-            else
-                return noContent();
+            yield (result.data.length > 0) ? ok(result) : noContent();
+
+            yield that.after(r);
+
+            return that.afterSearch(r);
 
         });
 
@@ -427,7 +435,11 @@ export abstract class BaseResource<T extends Object>
                 <Object>r.body,
                 <UpdateParams><object>extraParams);
 
-            return yes ? ok() : notFound();
+            yield yes ? ok() : notFound();
+
+            yield that.after(r);
+
+            return that.afterUpdate(r);
 
         });
 
@@ -461,7 +473,11 @@ export abstract class BaseResource<T extends Object>
             let mdoc = yield runGet(model, <Id>r.params.id,
                 <GetParams><object>params);
 
-            return mdoc.isJust() ? ok(mdoc.get()) : notFound();
+            yield mdoc.isJust() ? ok(mdoc.get()) : notFound();
+
+            yield that.after(r);
+
+            return that.afterGet(r);
 
         });
 
@@ -491,9 +507,70 @@ export abstract class BaseResource<T extends Object>
             let yes = yield runRemove(model, <Id>r.params.id,
                 <RemoveParams><object>params);
 
-            return yes ? ok() : notFound();
+            yield yes ? ok() : notFound();
+
+            yield that.after(r);
+
+            return that.afterRemove(r);
 
         });
+
+    }
+
+    /**
+     * after is a filter that is executed after each of the CSUGR
+     * methods have responded to the client.
+     *
+     * It can be overriden to execute other middleware.
+     */
+    after(_: Request): Action<void> {
+
+        return noop();
+
+    }
+
+    /**
+     * afterCreate is executed after [[create]] sends a response..
+     */
+    afterCreate(_: Request): Action<void> {
+
+        return noop();
+
+    }
+
+    /**
+     * afterSearch is executed after [[search]] sends a response.
+     */
+    afterSearch(_: Request): Action<void> {
+
+        return noop();
+
+    }
+
+    /**
+     * afterUpdate is executed after [[update]] sends a response.
+     */
+    afterUpdate(_: Request): Action<void> {
+
+        return noop();
+
+    }
+
+    /**
+     * afterGet is executed after [[get]] sends a response.
+     */
+    afterGet(_: Request): Action<void> {
+
+        return noop();
+
+    }
+
+    /**
+     * afterRemove is executed after [[remove]] sends a response.
+     */
+    afterRemove(_: Request): Action<void> {
+
+        return noop();
 
     }
 
