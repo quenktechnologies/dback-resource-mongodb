@@ -449,7 +449,7 @@ export abstract class BaseResource<T extends Object>
 
         let that = this;
 
-       return doAction(function*() {
+        return doAction(function*() {
 
             r = yield that.before(r);
 

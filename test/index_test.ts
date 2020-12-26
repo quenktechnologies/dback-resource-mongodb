@@ -16,11 +16,9 @@ import { just, nothing, Maybe } from '@quenk/noni/lib/data/maybe';
 import { JoinRef, Id } from '@quenk/dback-model-mongodb';
 
 import { Request } from '@quenk/tendril/lib/app/api/request';
-import { ok } from '@quenk/tendril/lib/app/api/response';
 import { value, noop } from '@quenk/tendril/lib/app/api/control';
-import { Context, doAction } from '@quenk/tendril/lib/app/api';
 
-import { BaseResource } from '../src';
+import { BaseResource } from '../lib';
 
 class MockModel {
 
@@ -36,26 +34,27 @@ class MockModel {
 
     create(data: Object): Future<Id> {
 
-        return this.MOCK.invoke('create', [data], pure(1));
+        return this.MOCK.invoke('create', [data], pure(<Id>1));
 
     }
 
     createAll(data: Object[]): Future<Id[]> {
 
-        return this.MOCK.invoke('createAll', [data], pure([]));
+        return this.MOCK.invoke('createAll', [data], pure(<Id[]>[]));
 
     }
 
     search(filter: object, opts: object = {}): Future<Object[]> {
 
-        return this.MOCK.invoke('search', [filter, opts], pure([]));
+        return this.MOCK.invoke('search', [filter, opts], pure(<Object[]>[]));
 
     }
 
     update(id: Id, changes: object, qry?: object,
         opts: object = {}): Future<boolean> {
 
-        return this.MOCK.invoke('update', [id, changes, qry, opts], pure(true));
+        return this.MOCK.invoke('update', [id, changes, qry, opts],
+            pure(<boolean>true));
 
     }
 
@@ -73,7 +72,8 @@ class MockModel {
 
     remove(id: Id, qry?: object, opts: object = {}): Future<boolean> {
 
-        return this.MOCK.invoke('remove', [id, qry, opts], pure(true));
+        return this.MOCK.invoke('remove', [id, qry, opts],
+            pure(<boolean>true));
 
     }
 
@@ -91,7 +91,8 @@ class MockModel {
 
     aggregate(pipeline: object[], opts: object = {}): Future<Object[]> {
 
-        return this.MOCK.invoke('aggregate', [pipeline, opts], pure([]));
+        return this.MOCK.invoke('aggregate', [pipeline, opts],
+            pure(<Object[]>[]));
 
     }
 
@@ -222,7 +223,7 @@ const getContext = (req: object): Type => ({
 
     module: {
 
-        system: {
+        app: {
 
             pool: {
 
@@ -318,7 +319,8 @@ describe('resource', () => {
 
                     let action = ctl.create(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -371,7 +373,8 @@ describe('resource', () => {
 
                     let action = ctl.create(<Type>{});
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -379,8 +382,8 @@ describe('resource', () => {
                             ctx.response.MOCK.wasCalledWithDeep('status', [409])
                         ).true();
 
-                        assert(ctl.MOCK.wasCalled('before')).false();
-                        assert(ctl.MOCK.wasCalled('beforeCreate')).false();
+                        assert(ctl.MOCK.wasCalled('before')).true();
+                        assert(ctl.MOCK.wasCalled('beforeCreate')).true();
                         assert(ctl
                             .model
                             .MOCK
@@ -453,7 +456,8 @@ describe('resource', () => {
 
                     let action = ctl.search(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -511,7 +515,8 @@ describe('resource', () => {
 
                     let action = ctl.search(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -552,16 +557,22 @@ describe('resource', () => {
 
                     let action = ctl.search(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
+
+                        assert(ctl.MOCK.wasCalled('before')).true();
+
+                        assert(ctl.MOCK.wasCalled('beforeSearch')).true();
+
+                        assert(ctl.model.MOCK.wasCalled('count')).false();
+
+                        assert(ctl.model.MOCK.wasCalled('search')).false();
 
                         assert(
                             ctx.response.MOCK.wasCalledWithDeep('status', [400])
                         ).true();
-
-                        assert(ctl.MOCK.wasCalled('before')).false();
-                        assert(ctl.MOCK.wasCalled('beforeSearch')).false();
 
                     });
 
@@ -583,7 +594,8 @@ describe('resource', () => {
 
                     let action = ctl.update(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -639,7 +651,8 @@ describe('resource', () => {
 
                     let action = ctl.update(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -676,7 +689,8 @@ describe('resource', () => {
 
                     let action = ctl.update(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -719,7 +733,8 @@ describe('resource', () => {
 
                     let action = ctl.update(<Type>{});
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -727,8 +742,10 @@ describe('resource', () => {
                             ctx.response.MOCK.wasCalledWithDeep('status', [409])
                         ).true();
 
-                        assert(ctl.MOCK.wasCalled('before')).false();
-                        assert(ctl.MOCK.wasCalled('beforeUpdate')).false();
+                        assert(ctl.MOCK.wasCalled('before')).true();
+
+                        assert(ctl.MOCK.wasCalled('beforeUpdate')).true();
+
                         assert(ctl
                             .model
                             .MOCK
@@ -748,7 +765,8 @@ describe('resource', () => {
                     let ctl = new TestResource(new MockModel());
                     let action = ctl.update(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -783,7 +801,8 @@ describe('resource', () => {
 
                     let action = ctl.get(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -844,7 +863,8 @@ describe('resource', () => {
 
                     let action = ctl.get(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -888,7 +908,8 @@ describe('resource', () => {
 
                     let action = ctl.get(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -928,7 +949,8 @@ describe('resource', () => {
                     let ctl = new TestResource(new MockModel());
                     let action = ctl.get(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -963,7 +985,8 @@ describe('resource', () => {
 
                     let action = ctl.remove(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -1014,7 +1037,8 @@ describe('resource', () => {
 
                     let action = ctl.remove(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -1050,7 +1074,8 @@ describe('resource', () => {
 
                     let action = ctl.remove(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
@@ -1090,7 +1115,8 @@ describe('resource', () => {
                     let ctl = new TestResource(new MockModel());
                     let action = ctl.get(ctx.request);
 
-                    yield action.foldM(() => pure(undefined), n => n.exec(ctx));
+                    yield action.foldM(() => pure(<void>undefined),
+                        n => n.exec(ctx));
 
                     yield attempt(() => {
 
