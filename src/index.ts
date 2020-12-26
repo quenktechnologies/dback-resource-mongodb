@@ -346,12 +346,12 @@ export abstract class BaseResource<T extends Object>
 
         return doAction<void>(function*() {
 
-            if (!isObject(r.body))
-                return conflict({ error: ERR_PAYLOAD_INVALID });
-
             r = yield that.before(r);
 
             r = yield that.beforeCreate(r);
+
+            if (!isObject(r.body))
+                return conflict({ error: ERR_PAYLOAD_INVALID });
 
             let db = yield checkout(that.conn);
 
@@ -377,16 +377,16 @@ export abstract class BaseResource<T extends Object>
 
         return doAction(function*() {
 
+            r = yield that.before(r);
+
+            r = yield that.beforeSearch(r);
+
             let mparams = r.prs.get(KEY_SEARCH_PARAMS);
 
             if (mparams.isNothing())
                 return badRequest({ error: ERR_NO_QUERY });
 
             let params = <SearchParams><object>mparams.get();
-
-            r = yield that.before(r);
-
-            r = yield that.beforeSearch(r);
 
             let db = yield checkout(that.conn);
 
@@ -410,15 +410,15 @@ export abstract class BaseResource<T extends Object>
 
         return doAction(function*() {
 
+            r = yield that.before(r);
+
+            r = yield that.beforeUpdate(r);
+
             if (!isObject(r.body))
                 return conflict({ error: ERR_PAYLOAD_INVALID });
 
             if (!r.params.id)
                 return notFound();
-
-            r = yield that.before(r);
-
-            r = yield that.beforeUpdate(r);
 
             let extraParams = r.prs.getOrElse(
                 KEY_UPDATE_PARAMS,
@@ -449,14 +449,14 @@ export abstract class BaseResource<T extends Object>
 
         let that = this;
 
-        return doAction(function*() {
-
-            if (!r.params.id)
-                return notFound();
+       return doAction(function*() {
 
             r = yield that.before(r);
 
             r = yield that.beforeGet(r);
+
+            if (!r.params.id)
+                return notFound();
 
             let params = r.prs.getOrElse(KEY_GET_PARAMS, {
 
@@ -489,12 +489,12 @@ export abstract class BaseResource<T extends Object>
 
         return doAction(function*() {
 
-            if (!r.params.id)
-                return notFound();
-
             r = yield that.before(r);
 
             r = yield that.beforeRemove(r);
+
+            if (!r.params.id)
+                return notFound();
 
             let params = r.prs.getOrElse(KEY_REMOVE_PARAMS, {
                 query: {},
