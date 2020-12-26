@@ -1,6 +1,6 @@
 {
     "name": "@quenk/dback-resource-mongodb",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "description": "Resource boilerplate for tendril web servers",
     "main": "lib/index.js",
     "files": [
