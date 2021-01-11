@@ -13,7 +13,6 @@ import { checkout } from '@quenk/tendril/lib/app/api/pool';
 import {
     ok,
     created,
-    badRequest,
     conflict
 } from '@quenk/tendril/lib/app/api/response';
 import {
@@ -24,7 +23,7 @@ import {
 import { Id, Model } from '@quenk/dback-model-mongodb';
 
 const defaultSearchParams =
-    { page: 1, limit: 1000 * 1000, query: {}, sort: {}, fields: {} };
+    { page: 1, limit: 5000, query: {}, sort: {}, fields: {} };
 
 export const KEY_CREATE_ID = 'resource.mongodb.create.id';
 export const KEY_SEARCH_PARAMS = 'resource.mongodb.search.params';
@@ -381,12 +380,10 @@ export abstract class BaseResource<T extends Object>
 
             r = yield that.beforeSearch(r);
 
-            let mparams = r.prs.get(KEY_SEARCH_PARAMS);
-
-            if (mparams.isNothing())
-                return badRequest({ error: ERR_NO_QUERY });
-
-            let params = <SearchParams><object>mparams.get();
+            let params = <SearchParams><object>r.prs.getOrElse(
+                KEY_SEARCH_PARAMS,
+                defaultSearchParams
+            );
 
             let db = yield checkout(that.conn);
 

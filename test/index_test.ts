@@ -449,8 +449,7 @@ describe('resource', () => {
                     let ctx = getContext({});
                     let ctl = new TestResource(new MockModel());
 
-                    ctx.request.prs.MOCK.setReturnValue('get', just(qryParams));
-
+                    ctx.request.prs.MOCK.setReturnValue('getOrElse', qryParams);
                     ctl.model.MOCK.setReturnValue('count', pure(8));
                     ctl.model.MOCK.setReturnValue('search', pure([{}, {}]));
 
@@ -508,8 +507,7 @@ describe('resource', () => {
                     let ctx = getContext({});
                     let ctl = new TestResource(new MockModel());
 
-                    ctx.request.prs.MOCK.setReturnValue('get', just(qryParams));
-
+                    ctx.request.prs.MOCK.setReturnValue('getOrElse', qryParams);
                     ctl.model.MOCK.setReturnValue('count', pure(0));
                     ctl.model.MOCK.setReturnValue('search', pure([]));
 
@@ -544,13 +542,11 @@ describe('resource', () => {
 
                 })))
 
-            it('should fail if no query set in prs', () =>
+            it('should not fail if no query set in prs', () =>
                 toPromise(doFuture<undefined>(function*() {
 
                     let ctx = getContext({});
                     let ctl = new TestResource(new MockModel());
-
-                    ctx.request.prs.MOCK.setReturnValue('get', nothing());
 
                     ctl.model.MOCK.setReturnValue('count', pure(8));
                     ctl.model.MOCK.setReturnValue('search', pure([{}, {}]));
@@ -566,12 +562,12 @@ describe('resource', () => {
 
                         assert(ctl.MOCK.wasCalled('beforeSearch')).true();
 
-                        assert(ctl.model.MOCK.wasCalled('count')).false();
+                        assert(ctl.model.MOCK.wasCalled('count')).true();
 
-                        assert(ctl.model.MOCK.wasCalled('search')).false();
+                        assert(ctl.model.MOCK.wasCalled('search')).true();
 
                         assert(
-                            ctx.response.MOCK.wasCalledWithDeep('status', [400])
+                            ctx.response.MOCK.wasCalledWithDeep('status', [200])
                         ).true();
 
                     });
@@ -609,7 +605,6 @@ describe('resource', () => {
                             'beforeUpdate',
                             'after',
                             'afterUpdate'
-
                         ]);
 
                         assert(
