@@ -156,10 +156,28 @@ export interface TotalSection {
 }
 
 /**
- * SearchResult is the object created after a successful search.
- *
- * It houses the actual data as well as some additional meta information related
- * to paging.
+ * CreateResult stores details about the record that was created after a 
+ * successful create operation.
+ */
+export interface CreateResult extends Object {
+
+  /**
+   * data contains properties of the record, currently only the id is expected. 
+   */
+   data: {
+
+     /**
+      * id assigned to the new record.
+      */
+     id: Id
+
+   }
+
+}
+
+/**
+ * SearchResult contains the result of a successfult search as well as additional
+ * meta information related to paging.
  */
 export interface SearchResult<T extends Object> {
 
@@ -360,7 +378,7 @@ export abstract class BaseResource<T extends Object>
 
             r.prs.set(KEY_CREATE_ID, id);
 
-            yield created({ id });
+            yield created({ data: {id }});
 
             yield that.after(r);
 

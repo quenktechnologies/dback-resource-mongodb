@@ -332,7 +332,7 @@ describe('resource', () => {
                             ctx
                                 .response
                                 .MOCK
-                                .wasCalledWithDeep('send', [{ id: 1 }])
+                                .wasCalledWithDeep('send', [{ data: {id: 1 }}])
                         ).true();
 
                         assert(
