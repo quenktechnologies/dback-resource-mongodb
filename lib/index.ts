@@ -22,8 +22,17 @@ import {
 
 import { Id, Model } from '@quenk/dback-model-mongodb';
 
-const defaultSearchParams =
-    { page: 1, limit: 5000, query: {}, sort: {}, fields: {} };
+const defaults = {
+
+    search: { page: 1, limit: 5000, query: {}, sort: {}, fields: {} },
+
+    update: { query: {}, changes: {} },
+
+    get: { query: {}, fields: {} },
+
+    remove: { query: {} }
+
+}
 
 export const KEY_CREATE_ID = 'resource.mongodb.create.id';
 export const KEY_SEARCH_PARAMS = 'resource.mongodb.search.params';
@@ -161,17 +170,17 @@ export interface TotalSection {
  */
 export interface CreateResult extends Object {
 
-  /**
-   * data contains properties of the record, currently only the id is expected. 
-   */
-   data: {
+    /**
+     * data contains properties of the record, currently only the id is expected. 
+     */
+    data: {
 
-     /**
-      * id assigned to the new record.
-      */
-     id: Id
+        /**
+         * id assigned to the new record.
+         */
+        id: Id
 
-   }
+    }
 
 }
 
@@ -214,6 +223,84 @@ export interface SearchResult<T extends Object> {
 }
 
 /**
+ * ParamsFactory is an object capable of providing required and additional
+ * parameters for the various CSUGR operations of a Resource.
+ *
+ * Previously these params were source from PRS however it's easier to replace
+ * and extend behaviour by using a factory class.
+ */
+export interface ParamsFactory {
+
+    /**
+     * search provides the parameters for a search.
+     */
+    search(_: Request): SearchParams
+
+    /**
+     * update provides the parameters for an update.
+     */
+    update(_: Request): UpdateParams
+
+    /**
+     * get provides the parameters for a get.
+     */
+    get(_: Request): GetParams
+
+    /**
+     * remove provides the parameters for a remove.
+     */
+    remove(_: Request): RemoveParams
+
+}
+
+/**
+ * DefaultParamsFactory provides params from the defaults this module ships
+ * with.
+ *
+ * These are ok for testing and development but in production this class should
+ * probably not be used. Especially in the case of searches.
+ */
+export class DefaultParamsFactory implements ParamsFactory {
+
+    /**
+     * search provides the parameters for a search.
+     */
+    search(_: Request): SearchParams {
+
+        return defaults.search;
+
+    }
+
+    /**
+     * update provides the parameters for an update.
+     */
+    update(_: Request): UpdateParams {
+
+        return defaults.update;
+
+    }
+
+    /**
+     * get provides the parameters for a get.
+     */
+    get(_: Request): GetParams {
+
+        return defaults.get;
+
+    }
+
+    /**
+     * remove provides the parameters for a remove.
+     */
+    remove(_: Request): RemoveParams {
+
+        return defaults.remove;
+
+    }
+
+}
+
+/**
  * Resource is the main interface of this module.
  *
  * It provides a basic JSON based CSUGR interface for a target collection.
@@ -237,7 +324,6 @@ export interface Resource {
     /**
      * search for a document in the Resource's collection.
      *
-     * The query parameters are built using the [[KEY_SEARCH_PARAMS]] PRS keys.
      * A successful result with found documents sends a [[SearchResult]], if
      * there are no matches the [[NoContent]] response is sent.
      */
@@ -247,8 +333,8 @@ export interface Resource {
      * update a single document in the Resource's collection.
      *
      * The document id is sourced from Request#params.id and the change data 
-     * from the request body. Additional conditions can be specified via the
-     * [[KEY_UPDATE_PARAMS]] PRS key.
+     * from the request body. Additional conditions for the query are also
+     * sourced from the installed [[ParamsFactory]].
      *
      * A successful update will result in an [[Ok]] response whereas a
      * [[NotFound]] is sent if the update was not applied.
@@ -259,7 +345,7 @@ export interface Resource {
      * get a single document in the Resource's collection.
      *
      * The document's id is sourced from Request#params.id. 
-     * Additional conditions can be specified via the [[KEY_GET_PARAMS]] PRS key.
+     * Additional conditions can be specified via the installed [[ParamsFactory]]
      *
      * A successful fetch will respond with [[Ok]] with the document as body 
      * otherwise [[NotFound]] is sent.
@@ -270,8 +356,7 @@ export interface Resource {
      * remove a single document in the Resource's collection.
      *
      * The document's id is sourced from Request#params.id.a
-     * Additional conditions can be specified via the [[KEY_REMOVE_PARAMS]] PRS
-     * key.
+     * Additional conditions can be specified via the installed [[ParamsFactory]]
      *
      * A successful delete will respond with a [[Ok]] or [[NotFound]] if the
      * document was not found.
@@ -294,6 +379,12 @@ export abstract class BaseResource<T extends Object>
     implements Resource {
 
     constructor(public conn: string = 'main') { }
+
+    /**
+     * params provides required and optional parameters for each of the CSUGR
+     * operations.
+     */
+    params: ParamsFactory = new DefaultParamsFactory();
 
     /**
      * getModel provides an instance of the Resource's main Model.
@@ -378,7 +469,7 @@ export abstract class BaseResource<T extends Object>
 
             r.prs.set(KEY_CREATE_ID, id);
 
-            yield created({ data: {id }});
+            yield created({ data: { id } });
 
             yield that.after(r);
 
@@ -398,10 +489,7 @@ export abstract class BaseResource<T extends Object>
 
             r = yield that.beforeSearch(r);
 
-            let params = <SearchParams><object>r.prs.getOrElse(
-                KEY_SEARCH_PARAMS,
-                defaultSearchParams
-            );
+            let params = that.params.search(r);
 
             let db = yield checkout(that.conn);
 
@@ -435,10 +523,7 @@ export abstract class BaseResource<T extends Object>
             if (!r.params.id)
                 return notFound();
 
-            let extraParams = r.prs.getOrElse(
-                KEY_UPDATE_PARAMS,
-                { query: {}, changes: {} }
-            );
+            let extraParams = that.params.update(r);
 
             let db = yield checkout(that.conn);
 
@@ -473,13 +558,7 @@ export abstract class BaseResource<T extends Object>
             if (!r.params.id)
                 return notFound();
 
-            let params = r.prs.getOrElse(KEY_GET_PARAMS, {
-
-                query: {},
-
-                fields: {},
-
-            });
+            let params = that.params.get(r);
 
             let db = yield checkout(that.conn);
 
@@ -511,9 +590,7 @@ export abstract class BaseResource<T extends Object>
             if (!r.params.id)
                 return notFound();
 
-            let params = r.prs.getOrElse(KEY_REMOVE_PARAMS, {
-                query: {},
-            });
+            let params = that.remove(r);
 
             let db = yield checkout(that.conn);
 
@@ -620,13 +697,13 @@ export const runSearch = <T extends Object>
 
             query: params.query || {},
 
-            page: params.page || defaultSearchParams.page,
+            page: params.page || defaults.search.page,
 
-            limit: params.limit || defaultSearchParams.limit,
+            limit: params.limit || defaults.search.limit,
 
-            sort: params.sort || defaultSearchParams.sort,
+            sort: params.sort || defaults.search.sort,
 
-            fields: params.fields || defaultSearchParams.fields
+            fields: params.fields || defaults.search.fields
 
         };
 

@@ -150,6 +150,56 @@ export interface SearchResult<T extends Object> {
     };
 }
 /**
+ * ParamsFactory is an object capable of providing required and additional
+ * parameters for the various CSUGR operations of a Resource.
+ *
+ * Previously these params were source from PRS however it's easier to replace
+ * and extend behaviour by using a factory class.
+ */
+export interface ParamsFactory {
+    /**
+     * search provides the parameters for a search.
+     */
+    search(_: Request): SearchParams;
+    /**
+     * update provides the parameters for an update.
+     */
+    update(_: Request): UpdateParams;
+    /**
+     * get provides the parameters for a get.
+     */
+    get(_: Request): GetParams;
+    /**
+     * remove provides the parameters for a remove.
+     */
+    remove(_: Request): RemoveParams;
+}
+/**
+ * DefaultParamsFactory provides params from the defaults this module ships
+ * with.
+ *
+ * These are ok for testing and development but in production this class should
+ * probably not be used. Especially in the case of searches.
+ */
+export declare class DefaultParamsFactory implements ParamsFactory {
+    /**
+     * search provides the parameters for a search.
+     */
+    search(_: Request): SearchParams;
+    /**
+     * update provides the parameters for an update.
+     */
+    update(_: Request): UpdateParams;
+    /**
+     * get provides the parameters for a get.
+     */
+    get(_: Request): GetParams;
+    /**
+     * remove provides the parameters for a remove.
+     */
+    remove(_: Request): RemoveParams;
+}
+/**
  * Resource is the main interface of this module.
  *
  * It provides a basic JSON based CSUGR interface for a target collection.
@@ -171,7 +221,6 @@ export interface Resource {
     /**
      * search for a document in the Resource's collection.
      *
-     * The query parameters are built using the [[KEY_SEARCH_PARAMS]] PRS keys.
      * A successful result with found documents sends a [[SearchResult]], if
      * there are no matches the [[NoContent]] response is sent.
      */
@@ -180,8 +229,8 @@ export interface Resource {
      * update a single document in the Resource's collection.
      *
      * The document id is sourced from Request#params.id and the change data
-     * from the request body. Additional conditions can be specified via the
-     * [[KEY_UPDATE_PARAMS]] PRS key.
+     * from the request body. Additional conditions for the query are also
+     * sourced from the installed [[ParamsFactory]].
      *
      * A successful update will result in an [[Ok]] response whereas a
      * [[NotFound]] is sent if the update was not applied.
@@ -191,7 +240,7 @@ export interface Resource {
      * get a single document in the Resource's collection.
      *
      * The document's id is sourced from Request#params.id.
-     * Additional conditions can be specified via the [[KEY_GET_PARAMS]] PRS key.
+     * Additional conditions can be specified via the installed [[ParamsFactory]]
      *
      * A successful fetch will respond with [[Ok]] with the document as body
      * otherwise [[NotFound]] is sent.
@@ -201,8 +250,7 @@ export interface Resource {
      * remove a single document in the Resource's collection.
      *
      * The document's id is sourced from Request#params.id.a
-     * Additional conditions can be specified via the [[KEY_REMOVE_PARAMS]] PRS
-     * key.
+     * Additional conditions can be specified via the installed [[ParamsFactory]]
      *
      * A successful delete will respond with a [[Ok]] or [[NotFound]] if the
      * document was not found.
@@ -222,6 +270,11 @@ export interface Resource {
 export declare abstract class BaseResource<T extends Object> implements Resource {
     conn: string;
     constructor(conn?: string);
+    /**
+     * params provides required and optional parameters for each of the CSUGR
+     * operations.
+     */
+    params: ParamsFactory;
     /**
      * getModel provides an instance of the Resource's main Model.
      */
@@ -292,7 +345,7 @@ export declare abstract class BaseResource<T extends Object> implements Resource
  * It is important the data supplied to this function is properly validated
  * or bad things can happen.
  */
-export declare const runCreate: <T extends Object>(model: Model<T>, data: T) => Action<string | number>;
+export declare const runCreate: <T extends Object>(model: Model<T>, data: T) => Action<Id>;
 /**
  * runSearch for documents in the database that match the specified
  * SearchParams.
