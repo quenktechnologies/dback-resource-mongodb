@@ -590,7 +590,7 @@ export abstract class BaseResource<T extends Object>
             if (!r.params.id)
                 return notFound();
 
-            let params = that.remove(r);
+            let params = that.params.remove(r);
 
             let db = yield checkout(that.conn);
 

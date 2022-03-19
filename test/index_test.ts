@@ -8,6 +8,7 @@ import {
     pure,
     Future
 } from '@quenk/noni/lib/control/monad/future';
+import { pure as freePure } from '@quenk/noni/lib/control/monad/free';
 import { merge } from '@quenk/noni/lib/data/record';
 import { Object } from '@quenk/noni/lib/data/jsonx';
 import { Type } from '@quenk/noni/lib/data/type';
@@ -106,7 +107,7 @@ class TestResource extends BaseResource<Object> {
 
     getModel() {
 
-        return this.model;
+        return <Type>this.model;
 
     }
 
@@ -250,23 +251,11 @@ const getContext = (req: object): Type => ({
 
             MOCK: new Mock(),
 
-            get(key: string) {
-
-                return this.MOCK.invoke('get', [key], nothing());
-
-            },
-
             set(key: string, value: Type) {
 
                 return this.MOCK.invoke('set', [key, value], this);
 
             },
-
-            getOrElse(key: string, alt: Type) {
-
-                return this.MOCK.invoke('getOrElse', [key, alt], alt);
-
-            }
 
         }
 
@@ -298,7 +287,14 @@ const getContext = (req: object): Type => ({
 
     onError: () => { },
 
-    filters: []
+    filters: [],
+
+    abort() {
+
+        this.filters = [];
+        return pure(freePure(<Type>undefined));
+
+    }
 
 });
 
@@ -332,7 +328,7 @@ describe('resource', () => {
                             ctx
                                 .response
                                 .MOCK
-                                .wasCalledWithDeep('send', [{ data: {id: 1 }}])
+                                .wasCalledWithDeep('send', [{ data: { id: 1 } }])
                         ).true();
 
                         assert(
@@ -449,7 +445,7 @@ describe('resource', () => {
                     let ctx = getContext({});
                     let ctl = new TestResource(new MockModel());
 
-                    ctx.request.prs.MOCK.setReturnValue('getOrElse', qryParams);
+                    ctl.params.search = () => qryParams;
                     ctl.model.MOCK.setReturnValue('count', pure(8));
                     ctl.model.MOCK.setReturnValue('search', pure([{}, {}]));
 
@@ -507,7 +503,7 @@ describe('resource', () => {
                     let ctx = getContext({});
                     let ctl = new TestResource(new MockModel());
 
-                    ctx.request.prs.MOCK.setReturnValue('getOrElse', qryParams);
+                    ctl.params.search = () => qryParams;
                     ctl.model.MOCK.setReturnValue('count', pure(0));
                     ctl.model.MOCK.setReturnValue('search', pure([]));
 
@@ -542,7 +538,7 @@ describe('resource', () => {
 
                 })))
 
-            it('should not fail if no query set in prs', () =>
+            it('should not fail if default ParamsFactory used', () =>
                 toPromise(doFuture<undefined>(function*() {
 
                     let ctx = getContext({});
@@ -625,53 +621,54 @@ describe('resource', () => {
 
                 })))
 
-            it('should source additional parameters from prs', () =>
-                toPromise(doFuture<undefined>(function*() {
+            it('should source additional parameters from installed ParamsFactory',
+                () =>
+                    toPromise(doFuture<undefined>(function*() {
 
-                    let req = { params: { id: 1 }, body: { id: 2 } };
-                    let ctx = getContext(req);
-                    let ctl = new TestResource(new MockModel());
+                        let req = { params: { id: 1 }, body: { id: 2 } };
+                        let ctx = getContext(req);
+                        let ctl = new TestResource(new MockModel());
 
-                    let qryParams = {
+                        let qryParams = {
 
-                        query: { name: 'Patrick' },
+                            query: { name: 'Patrick' },
 
-                        changes: { active: false }
+                            changes: { active: false }
 
-                    };
+                        };
 
-                    ctx.request.prs.MOCK.setReturnValue('getOrElse', qryParams);
+                        ctl.params.update = () => qryParams;
 
-                    ctl.model.MOCK.setReturnValue('update', pure(true));
+                        ctl.model.MOCK.setReturnValue('update', pure(true));
 
-                    let action = ctl.update(ctx.request);
+                        let action = ctl.update(ctx.request);
 
-                    yield action.foldM(() => pure(<void>undefined),
-                        n => n.exec(ctx));
+                        yield action.foldM(() => pure(<void>undefined),
+                            n => n.exec(ctx));
 
-                    yield attempt(() => {
+                        yield attempt(() => {
 
-                        assert(
-                            ctx.response.MOCK.wasCalledWith('status', [200])
-                        ).true();
+                            assert(
+                                ctx.response.MOCK.wasCalledWith('status', [200])
+                            ).true();
 
-                        assert(
-                            ctl
-                                .model
-                                .MOCK
-                                .wasCalledWithDeep('update', [
-                                    1,
-                                    { id: 2, active: false },
-                                    qryParams.query,
-                                    {}
-                                ])
-                        ).true();
+                            assert(
+                                ctl
+                                    .model
+                                    .MOCK
+                                    .wasCalledWithDeep('update', [
+                                        1,
+                                        { id: 2, active: false },
+                                        qryParams.query,
+                                        {}
+                                    ])
+                            ).true();
 
-                    });
+                        });
 
-                    return pure(undefined);
+                        return pure(undefined);
 
-                })))
+                    })))
 
             it('should 404 if not found', () =>
                 toPromise(doFuture<undefined>(function*() {
@@ -837,60 +834,61 @@ describe('resource', () => {
 
                 })))
 
-            it('should source additional parameters from prs', () =>
-                toPromise(doFuture<undefined>(function*() {
+            it('should source additional parameters from installed ParamsFactory',
+                () =>
+                    toPromise(doFuture<undefined>(function*() {
 
-                    let req = { params: { id: 1 } };
-                    let ctx = getContext(req);
-                    let ctl = new TestResource(new MockModel());
+                        let req = { params: { id: 1 } };
+                        let ctx = getContext(req);
+                        let ctl = new TestResource(new MockModel());
 
-                    let qryParams = {
+                        let qryParams = {
 
-                        query: { name: 'Chippy' },
+                            query: { name: 'Chippy' },
 
-                        fields: { id: 1 }
+                            fields: { id: 1 }
 
-                    };
+                        };
 
-                    ctx.request.prs.MOCK.setReturnValue('getOrElse', qryParams);
+                        ctl.params.get = () => qryParams;
 
-                    ctl.model.MOCK.setReturnValue('get', pure(just({ id: 1 })));
+                        ctl.model.MOCK.setReturnValue('get', pure(just({ id: 1 })));
 
-                    let action = ctl.get(ctx.request);
+                        let action = ctl.get(ctx.request);
 
-                    yield action.foldM(() => pure(<void>undefined),
-                        n => n.exec(ctx));
+                        yield action.foldM(() => pure(<void>undefined),
+                            n => n.exec(ctx));
 
-                    yield attempt(() => {
+                        yield attempt(() => {
 
-                        assert(
-                            ctx.response.MOCK.wasCalledWith('status', [200])
-                        ).true();
+                            assert(
+                                ctx.response.MOCK.wasCalledWith('status', [200])
+                            ).true();
 
-                        assert(
-                            ctx
-                                .response
-                                .MOCK
-                                .wasCalledWithDeep('send',
-                                    [{ data: { id: 1 } }])
-                        ).true();
+                            assert(
+                                ctx
+                                    .response
+                                    .MOCK
+                                    .wasCalledWithDeep('send',
+                                        [{ data: { id: 1 } }])
+                            ).true();
 
-                        assert(
-                            ctl
-                                .model
-                                .MOCK
-                                .wasCalledWithDeep('get', [
-                                    1,
-                                    { name: 'Chippy' },
-                                    { projection: { _id: 0, id: 1 } }
-                                ])
-                        ).true();
+                            assert(
+                                ctl
+                                    .model
+                                    .MOCK
+                                    .wasCalledWithDeep('get', [
+                                        1,
+                                        { name: 'Chippy' },
+                                        { projection: { _id: 0, id: 1 } }
+                                    ])
+                            ).true();
 
-                    });
+                        });
 
-                    return pure(undefined);
+                        return pure(undefined);
 
-                })))
+                    })))
 
             it('should 404 if not found', () =>
                 toPromise(doFuture<undefined>(function*() {
@@ -1013,50 +1011,51 @@ describe('resource', () => {
 
                 })))
 
-            it('should source additional parameters from prs', () =>
-                toPromise(doFuture<undefined>(function*() {
+            it('should source additional parameters from installed ParamsFactory',
+                () =>
+                    toPromise(doFuture<undefined>(function*() {
 
-                    let req = { params: { id: 1 } };
-                    let ctx = getContext(req);
-                    let ctl = new TestResource(new MockModel());
+                        let req = { params: { id: 1 } };
+                        let ctx = getContext(req);
+                        let ctl = new TestResource(new MockModel());
 
-                    let qryParams = {
+                        let qryParams = {
 
-                        query: { name: 'Adom' },
+                            query: { name: 'Adom' },
 
-                    };
+                        };
 
-                    ctx.request.prs.MOCK.setReturnValue('getOrElse', qryParams);
+                        ctl.params.remove = () => qryParams;
 
-                    ctl.model.MOCK.setReturnValue('remove', pure(true));
+                        ctl.model.MOCK.setReturnValue('remove', pure(true));
 
-                    let action = ctl.remove(ctx.request);
+                        let action = ctl.remove(ctx.request);
 
-                    yield action.foldM(() => pure(<void>undefined),
-                        n => n.exec(ctx));
+                        yield action.foldM(() => pure(<void>undefined),
+                            n => n.exec(ctx));
 
-                    yield attempt(() => {
+                        yield attempt(() => {
 
-                        assert(
-                            ctx.response.MOCK.wasCalledWith('status', [200])
-                        ).true();
+                            assert(
+                                ctx.response.MOCK.wasCalledWith('status', [200])
+                            ).true();
 
-                        assert(
-                            ctl
-                                .model
-                                .MOCK
-                                .wasCalledWithDeep('remove', [
-                                    1,
-                                    qryParams.query,
-                                    {}
-                                ])
-                        ).true();
+                            assert(
+                                ctl
+                                    .model
+                                    .MOCK
+                                    .wasCalledWithDeep('remove', [
+                                        1,
+                                        qryParams.query,
+                                        {}
+                                    ])
+                            ).true();
 
-                    });
+                        });
 
-                    return pure(undefined);
+                        return pure(undefined);
 
-                })))
+                    })))
 
             it('should 404 if not found', () =>
                 toPromise(doFuture<undefined>(function*() {
