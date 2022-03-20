@@ -14,7 +14,7 @@
     "dependencies": {
         "@quenk/dback-model-mongodb": "^0.2.1",
         "@quenk/noni": "^1.41.3",
-        "@quenk/tendril": "^0.42.18"
+        "@quenk/tendril": "^0.43.1"
     },
     "devDependencies": {
         "@quenk/test": "^2.3.0",
