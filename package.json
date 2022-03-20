@@ -12,7 +12,7 @@
     "author": "Lasana Murray <info@quenk.com> (http://quenk.com)",
     "license": "Apache-2.0",
     "dependencies": {
-        "@quenk/dback-model-mongodb": "^0.2.1",
+        "@quenk/dback-model-mongodb": "^0.2.2",
         "@quenk/noni": "^1.41.3",
         "@quenk/tendril": "^0.43.1"
     },
